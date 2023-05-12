@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "43884776206",
+    "firebase_url": "https://emergency-6e4d9-default-rtdb.firebaseio.com",
+    "project_id": "emergency-6e4d9",
+    "storage_bucket": "emergency-6e4d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43884776206:android:25290f93efff710ac4255f",
+        "android_client_info": {
+          "package_name": "com.collegeproject.authority"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43884776206-f9lfs4qu3l6id4thl7ial64c7dq1g053.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8V_RPlohkDlosIIlldH0brW6YdYt4ao4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43884776206-f9lfs4qu3l6id4thl7ial64c7dq1g053.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43884776206:android:318b65147740bbfdc4255f",
+        "android_client_info": {
+          "package_name": "com.collegeproject.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43884776206-f9lfs4qu3l6id4thl7ial64c7dq1g053.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8V_RPlohkDlosIIlldH0brW6YdYt4ao4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43884776206-f9lfs4qu3l6id4thl7ial64c7dq1g053.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43884776206:android:b211cfeba82f5b2fc4255f",
+        "android_client_info": {
+          "package_name": "com.collegeproject.patient"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43884776206-f9lfs4qu3l6id4thl7ial64c7dq1g053.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8V_RPlohkDlosIIlldH0brW6YdYt4ao4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43884776206-f9lfs4qu3l6id4thl7ial64c7dq1g053.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
