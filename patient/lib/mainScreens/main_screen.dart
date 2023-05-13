@@ -23,6 +23,8 @@ import '../widgets/my_drawer.dart';
 
 class MainScreen extends StatefulWidget
 {
+  const MainScreen({super.key});
+
 
 
   @override
@@ -35,7 +37,7 @@ class _MainScreenState extends State<MainScreen>
   GoogleMapController? newGoogleMapController ;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(17.3850, 78.4867),
     zoom: 14.4746,
   );
 
@@ -405,7 +407,7 @@ class _MainScreenState extends State<MainScreen>
          }
 
        setState(() {
-          ambulanceDriverRideStatus ="Ambulance will reach to you in " + directionDetailsInfo.duration_text.toString();
+          ambulanceDriverRideStatus ="Ambulance will reach to you in ${directionDetailsInfo.duration_text}";
        });
        requestPositionInfo = true;
      }
@@ -436,7 +438,7 @@ class _MainScreenState extends State<MainScreen>
       }
 
       setState(() {
-        ambulanceDriverRideStatus ="Will reach Hospital in  " + directionDetailsInfo.duration_text.toString();
+        ambulanceDriverRideStatus ="Will reach Hospital in  ${directionDetailsInfo.duration_text}";
       });
       requestPositionInfo = true;
     }
@@ -445,7 +447,7 @@ class _MainScreenState extends State<MainScreen>
   searchNearestOnlineDrivers() async
   {
     //when no active driver available
-    if(onlineNearbyAvailableAmbulanceDriversList.length == 0)
+    if(onlineNearbyAvailableAmbulanceDriversList.isEmpty)
       {
         //Cancel the ride request
 
@@ -612,7 +614,7 @@ class _MainScreenState extends State<MainScreen>
     return SafeArea(
       child: Scaffold(
         key: sKey,
-        drawer : Container(
+        drawer : SizedBox(
           width: 280,
           child: Theme(
             data: Theme.of(context).copyWith(
@@ -641,7 +643,7 @@ class _MainScreenState extends State<MainScreen>
                 _controllerGoogleMap.complete(controller);
                 newGoogleMapController = controller;
     
-                //for Black theme Google Map
+                // //for Black theme Google Map
                 // blackThemedGoogleMap();
     
                 locateUserPosition();
@@ -713,7 +715,7 @@ class _MainScreenState extends State<MainScreen>
                                 Text(
                                   Provider.of<AppInfo>(context).patientPickUpLocation != null
                                       ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!).substring(0,35)}..."
-                                      : "Not getting address",
+                                      : "Obtaining address",
                                   style: const TextStyle(
                                     color: Colors.grey,fontSize: 14,),
                                 ),
@@ -724,7 +726,7 @@ class _MainScreenState extends State<MainScreen>
     
                         const SizedBox(height: 10,),
     
-                        Divider(
+                        const Divider(
                           height: 1,
                             thickness: 1,
                             color: Colors.grey,
@@ -737,7 +739,7 @@ class _MainScreenState extends State<MainScreen>
                           onTap: () async
                           {
                             //go to search places screen
-                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>SearchPlacesScreen()));
+                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>const SearchPlacesScreen()));
     
                             if(responseFromSearchScreen == "obtainedDropoff")
                               {
@@ -786,9 +788,6 @@ class _MainScreenState extends State<MainScreen>
                         const SizedBox(height: 16.0,),
     
                         ElevatedButton(
-                          child: const Text(
-                            "Request Ambulance",
-                          ),
                           onPressed: ()
                           {
                             if(Provider.of<AppInfo>(context,listen: false).patientDropOffLocation != null)
@@ -803,6 +802,9 @@ class _MainScreenState extends State<MainScreen>
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             textStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                          ),
+                          child: const Text(
+                            "Request Ambulance",
                           ),
                         ),
     
@@ -996,17 +998,16 @@ class _MainScreenState extends State<MainScreen>
 
     if(decodedPolyLinePointsResultList.isNotEmpty)
       {
-        decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng)
-        {
+        for (var pointLatLng in decodedPolyLinePointsResultList) {
           pLinesCoOrdinatesList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-        });
+        }
       }
 
     polyLineSet.clear();
 
     setState(() {
       Polyline polyLine =Polyline(
-        color: Colors.white,
+        color: Colors.blueAccent,
         polylineId: const PolylineId("PolylineId"),
         jointType: JointType.round,
         points: pLinesCoOrdinatesList,
@@ -1050,18 +1051,18 @@ class _MainScreenState extends State<MainScreen>
       markerId: const MarkerId("originId"),
       infoWindow: InfoWindow(title: originPosition.locationName,snippet: "Origin"),
       position: originLatLng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
     );
 
     Marker destinationMarker = Marker(
       markerId: const MarkerId("destinationId"),
       infoWindow: InfoWindow(title: destinationPosition.locationName,snippet: "Destination"),
       position: destinationLatLng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     );
 
     setState(() {
-      markersSet.add(originMarker);
+      // markersSet.add(originMarker);
       markersSet.add(destinationMarker);
     });
 
@@ -1150,7 +1151,7 @@ class _MainScreenState extends State<MainScreen>
       markersSet.clear();
       circleSet.clear();
 
-      Set<Marker> driversMarkerSet = Set<Marker>();
+      Set<Marker> driversMarkerSet = <Marker>{};
 
       for(ActiveNearbyAvailableAmbulanceDrivers eachDriver in GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList)
         {
