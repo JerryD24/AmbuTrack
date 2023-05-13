@@ -11,7 +11,7 @@ import '../models/predicted_places.dart';
 
 class PlacePredictedTileDesign extends StatefulWidget
 {
-  final PredictedPlaces? predictedPlaces;
+  var predictedPlaces;
 
   PlacePredictedTileDesign({
    this.predictedPlaces
@@ -65,7 +65,7 @@ class _PlacePredictedTileDesignState extends State<PlacePredictedTileDesign> {
     return ElevatedButton(
       onPressed: ()
       {
-        getPlaceDirectionDetails(widget.predictedPlaces!.place_id,context);
+        getPlaceDirectionDetails(widget.predictedPlaces["place_id"],context);
       },
       style: ElevatedButton.styleFrom(backgroundColor: Colors.white10),
       child: Padding(
@@ -82,7 +82,7 @@ class _PlacePredictedTileDesignState extends State<PlacePredictedTileDesign> {
                 children: [
                   const SizedBox(height: 8.0,),
                   Text(
-                    widget.predictedPlaces!.main_text!,
+                    widget.predictedPlaces["name"],
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 16,
@@ -92,7 +92,7 @@ class _PlacePredictedTileDesignState extends State<PlacePredictedTileDesign> {
                   const SizedBox(height: 2.0,),
 
                   Text(
-                    widget.predictedPlaces!.secondary_text!,
+                    widget.predictedPlaces["vicinity"],
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 12,
