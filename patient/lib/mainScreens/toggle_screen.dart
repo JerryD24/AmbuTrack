@@ -69,7 +69,7 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
                       if(fAuth.currentUser != null)
                         {
                           currentFirebaseUser = fAuth.currentUser;
-                          Navigator.push(context, MaterialPageRoute(builder: (c)=>  MainScreen()));
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  MainScreen()),(Route<dynamic> route) => false);
                         }
                       else
                         {
@@ -93,7 +93,7 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
                 {
                   if(fAuth.currentUser != null)
                   {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> MainScreen()),(Route<dynamic> route) => false);
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> authority_main_screen.MainScreen()),(Route<dynamic> route) => false);
                   }
                   else
                   {

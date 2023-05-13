@@ -22,12 +22,11 @@ class _AuthoritySplashScreenState extends State<AuthoritySplashScreen>
 
       if(fAuth.currentUser != null)
         {
-          fAuth .signOut();
           Navigator.push(context, MaterialPageRoute(builder: (c)=> MainScreen()));
         }
       else
         {
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> LoginScreen()),(Route<dynamic> route) => false);
         }
 
     });

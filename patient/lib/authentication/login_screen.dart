@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen>
         {
           currentFirebaseUser =firebaseUser;
           Fluttertoast.showToast(msg: "Login Successful.");
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()),(Route<dynamic> route) => false);
         }
         else
         {
