@@ -10,6 +10,10 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../authentication/login_screen.dart';
+import 'package:patient/driver/lib/mainScreens/main_screen.dart' as driver_main_screen;
+import 'package:patient/authority/lib/mainScreens/main_screen.dart' as authority_main_screen;
+
+
 import '../global/global.dart';
 import 'main_screen.dart';
 
@@ -65,7 +69,7 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
                       if(fAuth.currentUser != null)
                         {
                           currentFirebaseUser = fAuth.currentUser;
-                          Navigator.push(context, MaterialPageRoute(builder: (c)=>  MainScreen()));
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  MainScreen()),(Route<dynamic> route) => false);
                         }
                       else
                         {
@@ -73,13 +77,28 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
                         }
                 }
               if(toggleIndex==1)
+              {
+                if(fAuth.currentUser != null)
+                {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> driver_main_screen.MainScreen()),(Route<dynamic> route) => false);
+                }
+                else
                 {
                   Navigator.push(context, MaterialPageRoute(builder: (c)=>  DriverSplashScreen()));
-                  Fluttertoast.showToast(msg: " You have selected as Driver");
                 }
+                // Navigator.push(context, MaterialPageRoute(builder: (c)=>  DriverSplashScreen()));
+                Fluttertoast.showToast(msg: " You have selected as Driver");
+              }
               if(toggleIndex==2)
                 {
-                  Navigator.push(context, MaterialPageRoute(builder: (c)=>  AuthoritySplashScreen()));
+                  if(fAuth.currentUser != null)
+                  {
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> authority_main_screen.MainScreen()),(Route<dynamic> route) => false);
+                  }
+                  else
+                  {
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=>  AuthoritySplashScreen()));
+                  }
                   Fluttertoast.showToast(msg: " You have selected as Authority");
                 }
             },

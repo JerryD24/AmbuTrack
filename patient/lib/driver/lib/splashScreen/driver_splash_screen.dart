@@ -18,17 +18,16 @@ class _DriverSplashScreenState extends State<DriverSplashScreen>
 {
   startTimer()
   {
-    Timer(const Duration(microseconds: 0), () async
+    Timer(const Duration(seconds: 1), () async
     {
-
+      // print(fAuth.currentUser.toString());
       if(fAuth.currentUser != null)
         {
-          fAuth .signOut();
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> const MainScreen()));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const MainScreen()),(Route<dynamic> route) => false);
         }
       else
         {
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
         }
 
     });

@@ -56,8 +56,8 @@ class _MainScreenState extends State<MainScreen>
   Set<Marker> markersSet = {};
   Set<Circle> circleSet = {};
 
-  String patientName = "your name";
-  String patientEmail ="your email";
+  String patientName = "Your Name";
+  String patientEmail ="Your Email";
 
   bool openNavigationDrawer = true;
 
@@ -372,7 +372,7 @@ class _MainScreenState extends State<MainScreen>
        }
 
         //status == start
-       if(patientRideRequestStatus =="wayToHospital")
+       if(patientRideRequestStatus =="Way To Hospital")
        {
          updateReachingTimeToPatientDropOffLocation(driverCurrentPositionLatLng);
        }
@@ -609,147 +609,96 @@ class _MainScreenState extends State<MainScreen>
   Widget build(BuildContext context) {
     createActiveNearbyAmbulanceDriverIconMarker();
 
-    return Scaffold(
-      key: sKey,
-      drawer : Container(
-        width: 280,
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: Colors.black,
-          ),
-          child: MyDrawer(
-            name: patientName,
-            email: patientEmail,
+    return SafeArea(
+      child: Scaffold(
+        key: sKey,
+        drawer : Container(
+          width: 280,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.black,
+            ),
+            child: MyDrawer(
+              name: patientName,
+              email: patientEmail,
+            ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-
-          GoogleMap(
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: true,
-            initialCameraPosition:_kGooglePlex,
-            polylines: polyLineSet,
-            markers: markersSet,
-            circles: circleSet,
-            onMapCreated: (GoogleMapController controller)
-            {
-              _controllerGoogleMap.complete(controller);
-              newGoogleMapController = controller;
-
-              //for Black theme Google Map
-              blackThemedGoogleMap();
-
-              locateUserPosition();
-            },
-          ),
-
-          //custom hamburger button for drawer
-          Positioned(
-            top: 45,
-            left: 22,
-            child: GestureDetector(
-              onTap: ()
+        body: Stack(
+          children: [
+    
+            GoogleMap(
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              zoomGesturesEnabled: true,
+              zoomControlsEnabled: true,
+              initialCameraPosition:_kGooglePlex,
+              polylines: polyLineSet,
+              markers: markersSet,
+              circles: circleSet,
+              onMapCreated: (GoogleMapController controller)
               {
-                if(openNavigationDrawer)
-                  {
-                    sKey.currentState!.openDrawer();
-                  }
-                else
-                  {
-                    //restart or refresh app automatically, in order to refresh stats of the app
-                    SystemNavigator.pop();
-                  }
-
+                _controllerGoogleMap.complete(controller);
+                newGoogleMapController = controller;
+    
+                //for Black theme Google Map
+                // blackThemedGoogleMap();
+    
+                locateUserPosition();
               },
-              child: CircleAvatar(
-                backgroundColor: Colors.grey,
-                child: Icon(
-                  openNavigationDrawer ? Icons.menu : Icons.close,
-                  color: Colors.black54,
+            ),
+    
+            //custom hamburger button for drawer
+            Positioned(
+              top: 45,
+              left: 22,
+              child: GestureDetector(
+                onTap: ()
+                {
+                  if(openNavigationDrawer)
+                    {
+                      sKey.currentState!.openDrawer();
+                    }
+                  else
+                    {
+                      //restart or refresh app automatically, in order to refresh stats of the app
+                      SystemNavigator.pop();
+                    }
+    
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  child: Icon(
+                    openNavigationDrawer ? Icons.menu : Icons.close,
+                    color: Colors.black54,
+                  ),
                 ),
               ),
             ),
-          ),
-
-          //ui for searching location
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: AnimatedSize(
-              curve: Curves.easeIn,
-              duration: const Duration(milliseconds: 120),
-              child: Container(
-                height: searchLocationContainerHeight,
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20),
-                  )
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 18),
-                  child: Column(
-                    children: [
-                      //from (current location)
-                      Row(
-                        children: [
-                          const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
-                          const SizedBox(width: 12.0,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "From",
-                                style: TextStyle(
-                                  color: Colors.grey,fontSize: 12,),
-                              ),
-                              Text(
-                                Provider.of<AppInfo>(context).patientPickUpLocation != null
-                                    ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!).substring(0,35)}..."
-                                    : "Not getting address",
-                                style: const TextStyle(
-                                  color: Colors.grey,fontSize: 14,),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 10,),
-
-                      Divider(
-                        height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                      ),
-
-                      const SizedBox(height: 16.0,),
-
-                      //to
-                      GestureDetector(
-                        onTap: () async
-                        {
-                          //go to search places screen
-                          var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>SearchPlacesScreen()));
-
-                          if(responseFromSearchScreen == "obtainedDropoff")
-                            {
-                              setState(() {
-                                openNavigationDrawer = false;
-                              });
-
-                              //draw routes- draw poly line
-                              await drawPolyLineFromOriginToDestination();
-
-                            }
-                        },
-                        child: Row(
+    
+            //ui for searching location
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: AnimatedSize(
+                curve: Curves.easeIn,
+                duration: const Duration(milliseconds: 120),
+                child: Container(
+                  height: searchLocationContainerHeight,
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                    )
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 18),
+                    child: Column(
+                      children: [
+                        //from (current location)
+                        Row(
                           children: [
                             const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
                             const SizedBox(width: 12.0,),
@@ -757,14 +706,14 @@ class _MainScreenState extends State<MainScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "To",
+                                  "From",
                                   style: TextStyle(
                                     color: Colors.grey,fontSize: 12,),
                                 ),
                                 Text(
-                                  Provider.of<AppInfo>(context).patientDropOffLocation != null
-                                      ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
-                                      : "Where to go",
+                                  Provider.of<AppInfo>(context).patientPickUpLocation != null
+                                      ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!).substring(0,35)}..."
+                                      : "Not getting address",
                                   style: const TextStyle(
                                     color: Colors.grey,fontSize: 14,),
                                 ),
@@ -772,197 +721,250 @@ class _MainScreenState extends State<MainScreen>
                             ),
                           ],
                         ),
-                      ),
-
-                      const SizedBox(height: 10,),
-
-                      const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.grey,
-                      ),
-
-                      const SizedBox(height: 16.0,),
-
-                      ElevatedButton(
-                        child: const Text(
-                          "Request Ambulance",
+    
+                        const SizedBox(height: 10,),
+    
+                        Divider(
+                          height: 1,
+                            thickness: 1,
+                            color: Colors.grey,
                         ),
-                        onPressed: ()
-                        {
-                          if(Provider.of<AppInfo>(context,listen: false).patientDropOffLocation != null)
-                            {
-                              saveRideRequestInformation();
-                            }
-                          else
-                            {
-                              Fluttertoast.showToast(msg: "Please Select Destination First!");
-                            }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          textStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+    
+                        const SizedBox(height: 16.0,),
+    
+                        //to
+                        GestureDetector(
+                          onTap: () async
+                          {
+                            //go to search places screen
+                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>SearchPlacesScreen()));
+    
+                            if(responseFromSearchScreen == "obtainedDropoff")
+                              {
+                                setState(() {
+                                  openNavigationDrawer = false;
+                                });
+    
+                                //draw routes- draw poly line
+                                await drawPolyLineFromOriginToDestination();
+    
+                              }
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
+                              const SizedBox(width: 12.0,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "To",
+                                    style: TextStyle(
+                                      color: Colors.grey,fontSize: 12,),
+                                  ),
+                                  Text(
+                                    Provider.of<AppInfo>(context).patientDropOffLocation != null
+                                        ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
+                                        : "Where to go",
+                                    style: const TextStyle(
+                                      color: Colors.grey,fontSize: 14,),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          //ui for waiting response from driver
-          Positioned(
-            bottom: 0,
-            left:0,
-            right: 0,
-            child: Container(
-              height: waitingResponseFromDriverContainerHeight,
-              decoration: const BoxDecoration(
-                  color: Colors.white60,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20),
-                  )
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Center(
-                  child: AnimatedTextKit(
-                    animatedTexts: [
-                      FadeAnimatedText(
-                        'Waiting for response from Driver...',
-                        textAlign: TextAlign.center,
-                        duration: const Duration(milliseconds: 5000),
-                        textStyle: const TextStyle(fontSize: 20.0,color: Colors.lightBlue, fontWeight: FontWeight.bold),
-                      ),
-                      ScaleAnimatedText(
-                        'Please Wait...',
-                        textAlign: TextAlign.center,
-                        duration: const Duration(milliseconds: 4000),
-                        textStyle: const TextStyle(fontSize: 25.0,color: Colors.lightBlue, fontFamily: 'Canterbury'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          //ui for displaying assigned driver information
-          Positioned(
-            bottom: 0,
-            left:0,
-            right: 0,
-            child: Container(
-              height: assignedDriverInfoContainerHeight,
-              decoration: const BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20),
-                  )
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //status of the Ride
-                    Center(
-                      child: Text(
-                        ambulanceDriverRideStatus,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white70,
+    
+                        const SizedBox(height: 10,),
+    
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey,
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20.0,),
-
-                    const Divider(
-                      height: 2,
-                      thickness: 2,
-                      color: Colors.white60,
-                    ),
-
-                    const SizedBox(height: 20.0,),
-                    //driver name
-
-                    Center(
-                      child: Text(
-                        driverName,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 2.0,),
-
-                    //Driver Vehicle Detail
-                    Center(
-                      child: Text(
-                        driverPhone,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ),
-
-
-
-                    const SizedBox(height: 20.0,),
-
-                    const Divider(
-                      height: 2,
-                      thickness: 2,
-                      color: Colors.white60,
-                    ),
-
-                    const SizedBox(height: 20.0,),
-
-                    //call driver button
-                    Center(
-                      child: ElevatedButton.icon(
+    
+                        const SizedBox(height: 16.0,),
+    
+                        ElevatedButton(
+                          child: const Text(
+                            "Request Ambulance",
+                          ),
                           onPressed: ()
                           {
-
+                            if(Provider.of<AppInfo>(context,listen: false).patientDropOffLocation != null)
+                              {
+                                saveRideRequestInformation();
+                              }
+                            else
+                              {
+                                Fluttertoast.showToast(msg: "Please Select Destination First!");
+                              }
                           },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            textStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                          ),
                         ),
-
-                          icon: const Icon(Icons.phone_android,
-                          color: Colors.black54,
-                            size: 22,
-                          ),
-                          label: const Text(
-                            "Call Driver",
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontWeight: FontWeight.bold,
-
-                            ),
-                          ),
-                      ),
+    
+                      ],
                     ),
-
-                  ],
+                  ),
                 ),
               ),
-
             ),
-          ),
-        ],
+    
+            //ui for waiting response from driver
+            Positioned(
+              bottom: 0,
+              left:0,
+              right: 0,
+              child: Container(
+                height: waitingResponseFromDriverContainerHeight,
+                decoration: const BoxDecoration(
+                    color: Colors.white60,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                    )
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Center(
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        FadeAnimatedText(
+                          'Waiting for response from Driver...',
+                          textAlign: TextAlign.center,
+                          duration: const Duration(milliseconds: 5000),
+                          textStyle: const TextStyle(fontSize: 20.0,color: Colors.lightBlue, fontWeight: FontWeight.bold),
+                        ),
+                        ScaleAnimatedText(
+                          'Please Wait...',
+                          textAlign: TextAlign.center,
+                          duration: const Duration(milliseconds: 4000),
+                          textStyle: const TextStyle(fontSize: 25.0,color: Colors.lightBlue, fontFamily: 'Canterbury'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    
+            //ui for displaying assigned driver information
+            Positioned(
+              bottom: 0,
+              left:0,
+              right: 0,
+              child: Container(
+                height: assignedDriverInfoContainerHeight,
+                decoration: const BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                    )
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //status of the Ride
+                      Center(
+                        child: Text(
+                          ambulanceDriverRideStatus,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+    
+                      const SizedBox(height: 20.0,),
+    
+                      const Divider(
+                        height: 2,
+                        thickness: 2,
+                        color: Colors.white60,
+                      ),
+    
+                      const SizedBox(height: 20.0,),
+                      //driver name
+    
+                      Center(
+                        child: Text(
+                          driverName,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+    
+                      const SizedBox(height: 2.0,),
+    
+                      //Driver Vehicle Detail
+                      Center(
+                        child: Text(
+                          driverPhone,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+    
+    
+    
+                      const SizedBox(height: 20.0,),
+    
+                      const Divider(
+                        height: 2,
+                        thickness: 2,
+                        color: Colors.white60,
+                      ),
+    
+                      const SizedBox(height: 20.0,),
+    
+                      //call driver button
+                      Center(
+                        child: ElevatedButton.icon(
+                            onPressed: ()
+                            {
+    
+                            },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                          ),
+    
+                            icon: const Icon(Icons.phone_android,
+                            color: Colors.black54,
+                              size: 22,
+                            ),
+                            label: const Text(
+                              "Call Driver",
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold,
+    
+                              ),
+                            ),
+                        ),
+                      ),
+    
+                    ],
+                  ),
+                ),
+    
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
