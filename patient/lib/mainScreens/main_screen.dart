@@ -507,7 +507,7 @@ class _MainScreenState extends State<MainScreen>
                   {
                     Fluttertoast.showToast(msg: "Driver has cancelled your Request. Please choose another Driver.");
 
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=>  MainScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=>  const MainScreen()));
                   }
 
 
@@ -700,6 +700,7 @@ class _MainScreenState extends State<MainScreen>
                     child: Column(
                       children: [
                         //from (current location)
+                        Padding(padding: const EdgeInsets.only(top: 5,bottom: 5,),child: 
                         Row(
                           children: [
                             const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
@@ -722,7 +723,7 @@ class _MainScreenState extends State<MainScreen>
                               ],
                             ),
                           ],
-                        ),
+                        )),
     
                         const SizedBox(height: 10,),
     
@@ -735,7 +736,7 @@ class _MainScreenState extends State<MainScreen>
                         const SizedBox(height: 16.0,),
     
                         //to
-                        GestureDetector(
+                        InkWell(
                           onTap: () async
                           {
                             //go to search places screen
@@ -752,10 +753,10 @@ class _MainScreenState extends State<MainScreen>
     
                               }
                           },
-                          child: Row(
+                          child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5) , child:  Row(
                             children: [
-                              const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
-                              const SizedBox(width: 12.0,),
+                               const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
+                               const SizedBox(width: 12.0,),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -774,7 +775,7 @@ class _MainScreenState extends State<MainScreen>
                                 ],
                               ),
                             ],
-                          ),
+                          )),
                         ),
     
                         const SizedBox(height: 10,),
