@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:patient/assistants/request_assistant.dart';
-import 'package:patient/models/predicted_places.dart';
 import 'package:patient/widgets/place_prediction_tile.dart';
 
 import '../global/map_key.dart';
@@ -17,20 +16,21 @@ class SearchPlacesScreen extends StatefulWidget {
 class _SearchPlacesScreenState extends State<SearchPlacesScreen>
 {
   List placePredictedList = [];
+  String search="Hospital";
 
   void findPlaceAutoCompleteSearch() async
   {
    
         Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
-    LatLng latLngPosition = LatLng(cPosition!.latitude, cPosition!.longitude);
+    LatLng latLngPosition = LatLng(cPosition.latitude, cPosition.longitude);
     String lat = cPosition.latitude.toString(),lon = cPosition.longitude.toString();
         String urlAutoCompleteSearch =
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=Hospital&location=$lat,$lon&rankby=distance&type=hospitals&key=$mapKey";
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=$search&location=$lat,$lon&rankby=distance&type=hospitals&key=$mapKey";
         // "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$inputText&key=$mapKey&components=country:IN";
         // "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=Hospitals near me&location=$lat,$lon&rankby=distance &type=hospital&key=$mapKey";
         var responseAutoCompleteSearch = await RequestAssistant.receiveRequest(urlAutoCompleteSearch);
-        print("Got-------------------------------------"+responseAutoCompleteSearch.toString());
+        // print("Got-------------------------------------$responseAutoCompleteSearch");
         if(responseAutoCompleteSearch == "Error occurred,Failed.No response")
           {
             return;
@@ -42,7 +42,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
             var placePredictions = responseAutoCompleteSearch["results"];
 
             // var placePredictionsList = (placePredictions as List).map((jsonData)=> PredictedPlaces.fromJson(jsonData)).toList();
-            print("============================="+placePredictions.toString());
+            // print("=============================$placePredictions");
 
             setState(() {
               placePredictedList = placePredictions;
@@ -63,6 +63,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //search place ui
             Container(
@@ -130,6 +131,12 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
                             child: TextField(
                               onChanged: (valueTyped)
                               {
+                                if(valueTyped=="" && search!="Hospital") {
+                                  search="Hospital";
+                                } else if(valueTyped!="") {
+                                  search=valueTyped;
+                                }
+                                // print("${search}dfhggggggggggggggggggggggggggggggggg");
                                 findPlaceAutoCompleteSearch();
                               },
                               decoration: const InputDecoration(
@@ -155,11 +162,11 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
             ),
     
             //display place predictions result
-            (placePredictedList.length > 0)
+            (placePredictedList.isNotEmpty)
                 ? Expanded(
               child: ListView.separated(
                 itemCount: placePredictedList.length,
-                physics: ClampingScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 itemBuilder:(context,index)
                 {
                   return PlacePredictedTileDesign(
@@ -176,7 +183,8 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
                 },
               ),
             )
-                : Container(),
+                :  Padding( padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height/2),
+                child: const CircularProgressIndicator()),
           ],
         ),
       ),
