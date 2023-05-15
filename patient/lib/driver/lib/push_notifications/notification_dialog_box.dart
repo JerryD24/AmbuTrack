@@ -80,20 +80,18 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
                   //origin location with icon
                   Row(
                     children: [
-                      Image.asset(
-                        "images/origin.png",
-                        width: 30,
-                        height: 30,
-                      ),
+                      // Image.asset(
+                      //   "images/origin.png",
+                      //   width: 30,
+                      //   height: 30,
+                      // ),
                       const SizedBox(width: 14,),
-                      Expanded(
-                        child: Container(
-                          child: Text(
-                            widget.patientRideRequestDetails!.originAddress!,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
+                      Container(
+                        child: Text(
+                          widget.patientRideRequestDetails!.originAddress!,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
@@ -105,11 +103,11 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
                   //destination location with icon
                   Row(
                     children: [
-                      Image.asset(
-                        "images/destination.png",
-                        width: 30,
-                        height: 30,
-                      ),
+                      // Image.asset(
+                      //   "images/destination.png",
+                      //   width: 30,
+                      //   height: 30,
+                      // ),
                       const SizedBox(width: 14,),
                       Expanded(
                         child: Container(
