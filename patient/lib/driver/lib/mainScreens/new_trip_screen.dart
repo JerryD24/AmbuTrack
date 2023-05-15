@@ -465,9 +465,9 @@ class _NewTripScreenState extends State<NewTripScreen>
                         ElevatedButton.icon(
                             onPressed: () async
                             {
-                              String url ='https://www.google.com/maps/dir/?api=1&origin=43.7967876,-79.5331616&destination=43.5184049,-79.8473993&travelmode=driving&dir_action=navigate';
+                              String url ='https://www.google.com/maps/dir/?api=1&origin=17.3850,78.4867&destination=17.9689,79.5941&travelmode=driving&dir_action=navigate';
                               if (await canLaunchUrlString(url))
-                              await launchUrlString(url);
+                              await launchUrlString(url,mode: LaunchMode.externalNonBrowserApplication);
                               else{
                                 print("Not====================================================");
                               }
