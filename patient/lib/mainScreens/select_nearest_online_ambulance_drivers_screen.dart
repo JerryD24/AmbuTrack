@@ -70,7 +70,7 @@ class _SelectNearestActiveAmbulanceDriversScreenState extends State<SelectNeares
 
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                    dList[index] ,
+                    // dList[index] ,
                       Text(
                         dList[index]["name"],
                         style: const TextStyle(
