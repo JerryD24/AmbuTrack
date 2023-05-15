@@ -243,7 +243,7 @@ class _MainScreenState extends State<MainScreen>
     initializeGeoFireListener();
   }
 
-  saveRideRequestInformation()
+  saveRideRequestInformation() async
   {
     //1. save the ride request information
     referenceAmbulanceRequest = FirebaseDatabase.instance.ref().child("Ambulance Request").push();
@@ -280,6 +280,8 @@ class _MainScreenState extends State<MainScreen>
   };
 
   referenceAmbulanceRequest!.set(patientInformationMap);
+   onlineNearbyAvailableAmbulanceDriversList = GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList;
+    await searchNearestOnlineDrivers();
 
   ///////////////////////////////////////////////////Authority//////////////////////////////////////////////////
 
@@ -290,11 +292,11 @@ class _MainScreenState extends State<MainScreen>
 
     ambulanceCallRequestStreamSubscription = referenceAmbulanceRequest!.onValue.listen((eventSnap)
     {
-      if(eventSnap.snapshot.value == null)
-        {
+      if(eventSnap.snapshot.value == null || (eventSnap.snapshot.value as Map)["driverId"]=="waiting" )
+      {
           return;
-        }
-
+      }
+      print("${eventSnap.snapshot.value}-----------------------------------");
       if((eventSnap.snapshot.value as Map)["driverId"]["driverName"] != null)
       {
         setState(() {
@@ -345,8 +347,6 @@ class _MainScreenState extends State<MainScreen>
       }
     });
 
-    onlineNearbyAvailableAmbulanceDriversList = GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList;
-    searchNearestOnlineDrivers();
 
   }
 
