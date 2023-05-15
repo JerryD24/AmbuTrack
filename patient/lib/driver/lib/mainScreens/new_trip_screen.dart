@@ -33,7 +33,7 @@ class _NewTripScreenState extends State<NewTripScreen>
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(17.3850, 78.4867),
     zoom: 14.4746,
   );
 
@@ -314,7 +314,7 @@ class _NewTripScreenState extends State<NewTripScreen>
               });
 
               //black theme google map
-              blackThemedGoogleMap(newTripGoogleMapController);
+              // blackThemedGoogleMap(newTripGoogleMapController);
 
               var driverCurrentLatLng = LatLng(
                   driverCurrentPosition!.latitude,
@@ -402,11 +402,11 @@ class _NewTripScreenState extends State<NewTripScreen>
                     //user PickUp Address with icon
                     Row(
                       children: [
-                        Image.asset(
-                          "images/origin.png",
-                          width: 30,
-                          height: 30,
-                        ),
+                        // Image.asset(
+                        //   "images/origin.png",
+                        //   width: 30,
+                        //   height: 30,
+                        // ),
                         const SizedBox(width: 14,),
                         Expanded(
                           child: Container(
@@ -427,11 +427,11 @@ class _NewTripScreenState extends State<NewTripScreen>
                     //user DropOff Address with icon
                     Row(
                       children: [
-                        Image.asset(
-                          "images/destination.png",
-                          width: 30,
-                          height: 30,
-                        ),
+                        // Image.asset(
+                        //   "images/destination.png",
+                        //   width: 30,
+                        //   height: 30,
+                        // ),
                         const SizedBox(width: 14,),
                         Expanded(
                           child: Container(
