@@ -21,7 +21,7 @@ import '../global/global.dart';
 import '../infoHandler/app_info.dart';
 import '../widgets/my_drawer.dart';
 
-class MainScreen extends StatefulWidget
+class MainScreen extends StatefulWidget   //Patient Main Screen
 {
   const MainScreen({super.key});
 
@@ -83,7 +83,7 @@ class _MainScreenState extends State<MainScreen>
 
   /////////////////////////////////
 
-  blackThemedGoogleMap()
+  blackThemedGoogleMap()    //uncomment for black theme of google map
   {
     newGoogleMapController!.setMapStyle('''
                     [
@@ -210,44 +210,7 @@ class _MainScreenState extends State<MainScreen>
                           }
                         ]
                       },
-                      {
-                        "featureType": "transit.station",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                          {
-                            "color": "#d59563"
-                          }
-                        ]
-                      },
-                      {
-                        "featureType": "water",
-                        "elementType": "geometry",
-                        "stylers": [
-                          {
-                            "color": "#17263c"
-                          }
-                        ]
-                      },
-                      {
-                        "featureType": "water",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                          {
-                            "color": "#515c6d"
-                          }
-                        ]
-                      },
-                      {
-                        "featureType": "water",
-                        "elementType": "labels.text.stroke",
-                        "stylers": [
-                          {
-                            "color": "#17263c"
-                          }
-                        ]
-                      }
-                    ]
-                ''');
+                   ''');
   }
 
   checkIfLocationPermissionAllowed()
@@ -709,7 +672,7 @@ class _MainScreenState extends State<MainScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "From",
+                                  "Current Location",
                                   style: TextStyle(
                                     color: Colors.grey,fontSize: 12,),
                                 ),

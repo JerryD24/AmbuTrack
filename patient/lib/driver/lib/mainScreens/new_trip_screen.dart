@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../widgets/progress_dialog.dart';
 import '../assistants/assistant_methods.dart';
@@ -457,97 +459,125 @@ class _NewTripScreenState extends State<NewTripScreen>
 
                     const SizedBox(height: 10.0),
 
-                    ElevatedButton.icon(
-                      onPressed: () async
-                      {
-                        //Driver has arrived at User pick up Location
-                        if(rideRequestStatus == "accepted") 
-                          {
-                          rideRequestStatus = "arrived";
-
-                            FirebaseDatabase.instance.ref()
-                            .child("Ambulance Request")
-                                .child(widget.patientRideRequestDetails!.rideRequestId!)
-                            .child("status")
-                            .set(rideRequestStatus);
-
-                          DatabaseReference authorityReference = FirebaseDatabase.instance.ref("Ambulance Request").child(widget.patientRideRequestDetails!.rideRequestId!);
-                          DatabaseEvent event = await authorityReference.once();
-
-                          String destinationLatitude = (event.snapshot.value as Map )["destination"]["latitude"];
-                          String destinationLongitude = (event.snapshot.value as Map )["destination"]["longitude"];
-                          String destinationAddress = (event.snapshot.value as Map )["destinationAddress"];
-
-                          DatabaseReference databaseReferenceForAuthority = FirebaseDatabase.instance.ref()                    //For Authority
-                              .child("Ambulance On Work")                                                                      //For Authority
-                              .child(widget.patientRideRequestDetails!.rideRequestId!).child("driverId");
-
-                          databaseReferenceForAuthority.child("destination").update({"latitude":destinationLatitude});
-                          databaseReferenceForAuthority.child("destination").update({"longitude":destinationLongitude});
-
-                          databaseReferenceForAuthority.update({"destinationAddress": destinationAddress});
-
-
-                            setState(() {
-                              buttonTitle = "Start Ambulance";
-                              buttonColor =Colors.lightBlueAccent;
-
-                            });
-
-                            showDialog(
-                              barrierDismissible: false,
-                                context: context,
-                                builder: (BuildContext c)=> ProgressDialog(
-                                  message: "Please wait...",
-                                ),
-                            );
-
-                            await drawPolyLineFromOriginToDestination(
-                              widget.patientRideRequestDetails!.originLatLng!,
-                                widget.patientRideRequestDetails!.destinationLatLng!
-                            );
-
-                            Navigator.pop(context);
-                          }
-                        //Patient is already in the ambulance 
-                        else if(rideRequestStatus == "arrived")
-                        {
-                          rideRequestStatus = "wayToHospital";
-
-                          FirebaseDatabase.instance.ref()
-                              .child("Ambulance Request")
-                              .child(widget.patientRideRequestDetails!.rideRequestId!)
-                              .child("status")
-                              .set(rideRequestStatus);
-
-                          setState(() {
-                            buttonTitle = "Reached Hospital";
-                            buttonColor =Colors.redAccent;
-                          });
-                        }
-
-                        else if(rideRequestStatus == "wayToHospital")
-                        {
-                          endTripNow();
-                        }
-                        
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonColor,
-                      ),
-                      icon: const Icon(
-                        Icons.directions_car,
-                        color: Colors.white,
-                        size: 25,
-                      ),
-                      label: Text(
-                        buttonTitle!,
-                        style: const TextStyle(
+                    Row(
+                      mainAxisAlignment:MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton.icon(
+                            onPressed: () async
+                            {
+                              String url ='https://www.google.com/maps/dir/?api=1&origin=43.7967876,-79.5331616&destination=43.5184049,-79.8473993&travelmode=driving&dir_action=navigate';
+                              if (await canLaunchUrlString(url))
+                              await launchUrlString(url);
+                              else{
+                                print("Not====================================================");
+                              }
+                            },
+                          icon: const Icon(
+                          Icons.directions_car,
                           color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                          size: 25,
                         ),
-                      ),
+                          label: Text(
+                          "Navigate",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ), ),
+                        ElevatedButton.icon(
+                          onPressed: () async
+                          {
+                            //Driver has arrived at User pick up Location
+                            if(rideRequestStatus == "accepted")
+                              {
+                              rideRequestStatus = "arrived";
+
+                                FirebaseDatabase.instance.ref()
+                                .child("Ambulance Request")
+                                    .child(widget.patientRideRequestDetails!.rideRequestId!)
+                                .child("status")
+                                .set(rideRequestStatus);
+
+                              DatabaseReference authorityReference = FirebaseDatabase.instance.ref("Ambulance Request").child(widget.patientRideRequestDetails!.rideRequestId!);
+                              DatabaseEvent event = await authorityReference.once();
+
+                              String destinationLatitude = (event.snapshot.value as Map )["destination"]["latitude"];
+                              String destinationLongitude = (event.snapshot.value as Map )["destination"]["longitude"];
+                              String destinationAddress = (event.snapshot.value as Map )["destinationAddress"];
+
+                              DatabaseReference databaseReferenceForAuthority = FirebaseDatabase.instance.ref()                    //For Authority
+                                  .child("Ambulance On Work")                                                                      //For Authority
+                                  .child(widget.patientRideRequestDetails!.rideRequestId!).child("driverId");
+
+                              databaseReferenceForAuthority.child("destination").update({"latitude":destinationLatitude});
+                              databaseReferenceForAuthority.child("destination").update({"longitude":destinationLongitude});
+
+                              databaseReferenceForAuthority.update({"destinationAddress": destinationAddress});
+
+
+                                setState(() {
+                                  buttonTitle = "Start Ambulance";
+                                  buttonColor =Colors.lightBlueAccent;
+
+                                });
+
+                                showDialog(
+                                  barrierDismissible: false,
+                                    context: context,
+                                    builder: (BuildContext c)=> ProgressDialog(
+                                      message: "Please wait...",
+                                    ),
+                                );
+
+                                await drawPolyLineFromOriginToDestination(
+                                  widget.patientRideRequestDetails!.originLatLng!,
+                                    widget.patientRideRequestDetails!.destinationLatLng!
+                                );
+
+                                Navigator.pop(context);
+                              }
+                            //Patient is already in the ambulance
+                            else if(rideRequestStatus == "arrived")
+                            {
+                              rideRequestStatus = "wayToHospital";
+
+                              FirebaseDatabase.instance.ref()
+                                  .child("Ambulance Request")
+                                  .child(widget.patientRideRequestDetails!.rideRequestId!)
+                                  .child("status")
+                                  .set(rideRequestStatus);
+
+                              setState(() {
+                                buttonTitle = "Reached Hospital";
+                                buttonColor =Colors.redAccent;
+                              });
+                            }
+
+                            else if(rideRequestStatus == "wayToHospital")
+                            {
+                              endTripNow();
+                            }
+
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: buttonColor,
+                          ),
+                          icon: const Icon(
+                            Icons.directions_car,
+                            color: Colors.white,
+                            size: 25,
+                          ),
+                          label: Text(
+                            buttonTitle!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
 
                   ],
