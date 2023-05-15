@@ -460,7 +460,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                           //Navigate Button
                           onPressed: () async {
                             String url =
-                                'https://www.google.com/maps/dir/?api=1&origin=17.3850,78.4867&destination=17.9689,79.5941&travelmode=driving&dir_action=navigate';
+                                'https://www.google.com/maps/search/?api=1&query=17.9689,79.5941&travelmode=driving';
                             if (await canLaunchUrlString(url))
                               await launchUrlString(url,
                                   mode:
