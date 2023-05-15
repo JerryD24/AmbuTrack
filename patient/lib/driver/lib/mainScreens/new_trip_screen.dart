@@ -462,15 +462,12 @@ class _NewTripScreenState extends State<NewTripScreen>
                     Row(
                       mainAxisAlignment:MainAxisAlignment.spaceAround,
                       children: [
-                        ElevatedButton.icon(
+                        ElevatedButton.icon(    //Navigate Button
                             onPressed: () async
                             {
                               String url ='https://www.google.com/maps/dir/?api=1&origin=43.7967876,-79.5331616&destination=43.5184049,-79.8473993&travelmode=driving&dir_action=navigate';
                               if (await canLaunchUrlString(url))
-                              await launchUrlString(url);
-                              else{
-                                print("Not====================================================");
-                              }
+                                await launchUrlString(url);
                             },
                           icon: const Icon(
                           Icons.directions_car,
@@ -485,7 +482,7 @@ class _NewTripScreenState extends State<NewTripScreen>
                             fontWeight: FontWeight.bold,
                           ),
                         ), ),
-                        ElevatedButton.icon(
+                        ElevatedButton.icon(    //Arrived Button
                           onPressed: () async
                           {
                             //Driver has arrived at User pick up Location
