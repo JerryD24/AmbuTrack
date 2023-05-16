@@ -1,4 +1,6 @@
 
+// ignore_for_file: prefer_const_constructors
+
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:patient/driver/lib/assistants/assistant_methods.dart';
 import 'package:patient/driver/lib/mainScreens/new_trip_screen.dart';
@@ -77,6 +79,18 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
+                  SizedBox(
+                        width: MediaQuery.of(context).size.width*3/5,
+                        child: Text(
+                          "Patient Address",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+
                   //origin location with icon
                   Row(
                     children: [
@@ -99,29 +113,29 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
                     ],
                   ),
 
-                  const SizedBox(height: 15.0),
+                  // const SizedBox(height: 15.0),
 
-                  //destination location with icon
-                  Row(
-                    children: [
-                      // Image.asset(
-                      //   "images/destination.png",
-                      //   width: 30,
-                      //   height: 30,
-                      // ),
-                      const SizedBox(width: 14,),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width*3/5,
-                        child: Text(
-                          widget.patientRideRequestDetails!.destinationAddress!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // //destination location with icon
+                  // Row(
+                  //   children: [
+                  //     // Image.asset(
+                  //     //   "images/destination.png",
+                  //     //   width: 30,
+                  //     //   height: 30,
+                  //     // ),
+                  //     const SizedBox(width: 14,),
+                  //     SizedBox(
+                  //       width: MediaQuery.of(context).size.width*3/5,
+                  //       child: Text(
+                  //         widget.patientRideRequestDetails!.destinationAddress!,
+                  //         style: const TextStyle(
+                  //           fontSize: 16,
+                  //           color: Colors.grey,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

@@ -71,9 +71,9 @@ class PushNotificationSystem
           double originLng = double.parse((snapData.snapshot.value! as Map)["origin"]["longitude"]);
           String originAddress =(snapData.snapshot.value! as Map)["originAddress"].toString();
 
-          double destinationLat = double.parse((snapData.snapshot.value! as Map)["destination"]["latitude"]);
-          double destinationLng = double.parse((snapData.snapshot.value! as Map)["destination"]["longitude"]);
-          String destinationAddress =(snapData.snapshot.value! as Map)["destinationAddress"].toString();
+          // double destinationLat = double.parse((snapData.snapshot.value! as Map)["destination"]["latitude"]);
+          // double destinationLng = double.parse((snapData.snapshot.value! as Map)["destination"]["longitude"]);
+          // String destinationAddress =(snapData.snapshot.value! as Map)["destinationAddress"].toString();
 
           String userName =(snapData.snapshot.value! as Map)["userName"].toString();
           String userPhone =(snapData.snapshot.value! as Map)["userPhone"].toString();
@@ -85,8 +85,8 @@ class PushNotificationSystem
           patientRideRequestDetails.originLatLng = LatLng(originLat, originLng);
           patientRideRequestDetails.originAddress = originAddress;
 
-          patientRideRequestDetails.destinationLatLng = LatLng(destinationLat, destinationLng);
-          patientRideRequestDetails.destinationAddress = destinationAddress;
+          // patientRideRequestDetails.destinationLatLng = LatLng(destinationLat, destinationLng);
+          // patientRideRequestDetails.destinationAddress = destinationAddress;
 
           patientRideRequestDetails.userName = userName;
           patientRideRequestDetails.userPhone = userPhone;
@@ -113,16 +113,16 @@ class PushNotificationSystem
   Future generateAndGetToken() async
   {
     String? registrationToken = await messaging.getToken();
-    print("FCM Registration Token");
-    print(registrationToken);
+    // print("FCM Registration Token");
+    // print(registrationToken);
 
-    FirebaseDatabase.instance.ref()
+    await FirebaseDatabase.instance.ref()
         .child("Drivers")
         .child(currentFirebaseUser!.uid)
         .child("token")
         .set(registrationToken);
 
-    messaging.subscribeToTopic("Ambulance Driver");
-    messaging.subscribeToTopic("Ambulance Patient");
+    await messaging.subscribeToTopic("Ambulance Driver");
+    await messaging.subscribeToTopic("Ambulance Patient");
   }
 }

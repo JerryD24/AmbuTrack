@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:async';
 
@@ -12,7 +12,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:patient/assistants/assistant_methods.dart';
 import 'package:patient/assistants/geofire_assistant.dart';
-import 'package:patient/mainScreens/search_places_screen.dart';
 import 'package:patient/mainScreens/select_nearest_online_ambulance_drivers_screen.dart';
 import 'package:patient/mainScreens/toggle_screen.dart';
 import 'package:patient/models/active_nearby_available_ambulance_drivers.dart';
@@ -251,7 +250,7 @@ class _MainScreenState extends State<MainScreen>
     referenceAmbulanceRequest = FirebaseDatabase.instance.ref().child("Ambulance Request").push();
 
     var originLocation = Provider.of<AppInfo>(context,listen: false).patientPickUpLocation;
-    var destinationLocation = Provider.of<AppInfo>(context,listen: false).patientDropOffLocation;
+    // var destinationLocation = Provider.of<AppInfo>(context,listen: false).patientDropOffLocation;
 
     Map originLocationMap =
     {
@@ -261,23 +260,23 @@ class _MainScreenState extends State<MainScreen>
       "longitude": originLocation.locationLongitude.toString(),
     };
 
-  Map destinationLocationMap =
-    {
-    //Key : value,
+  // Map destinationLocationMap =
+  //   {
+  //   //Key : value,
 
-    "latitude": destinationLocation!.locationLatitude.toString(),
-    "longitude": destinationLocation.locationLongitude.toString(),
-    };
+  //   "latitude": destinationLocation!.locationLatitude.toString(),
+  //   "longitude": destinationLocation.locationLongitude.toString(),
+  //   };
 
   Map patientInformationMap =
   {
     "origin": originLocationMap,
-    "destination" : destinationLocationMap,
+    // "destination" : destinationLocationMap,
     "time" : DateTime.now().toString(),
     "userName" : userModelCurrentInfo!.name,
     "userPhone" : userModelCurrentInfo!.phone,
     "originAddress" : originLocation.locationName,
-    "destinationAddress" : destinationLocation.locationName,
+    // "destinationAddress" : destinationLocation.locationName,
     "driverId" : "waiting",
   };
 
@@ -680,18 +679,19 @@ class _MainScreenState extends State<MainScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    "Current Location",
+                                    "Current Address",
                                     style: TextStyle(
-                                      color: Colors.grey,fontSize: 12,),
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,fontSize: 16,),
                                   ),
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width*3/4,
                                     child: Text(
                                       Provider.of<AppInfo>(context).patientPickUpLocation != null
-                                          ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!).substring(0,35)}..."
+                                          ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!)}"
                                           : "Obtaining address",
                                       style: const TextStyle(
-                                        color: Colors.grey,fontSize: 14,),
+                                        color: Colors.grey,fontSize: 16,),
                                     ),
                                   ),
                                 ],
@@ -700,63 +700,63 @@ class _MainScreenState extends State<MainScreen>
                           )),
                         ),
     
-                        const SizedBox(height: 10,),
+                        // const SizedBox(height: 10,),
     
-                        const Divider(
-                          height: 1,
-                            thickness: 1,
-                            color: Colors.grey,
-                        ),
+                        // const Divider(
+                        //   height: 1,
+                        //     thickness: 1,
+                        //     color: Colors.grey,
+                        // ),
     
-                        const SizedBox(height: 16.0,),
+                        // const SizedBox(height: 16.0,),
     
                         //to
-                        InkWell(
-                          onTap: () async
-                          {
-                            //go to search places screen
-                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>const SearchPlacesScreen()));
+                        // InkWell(
+                        //   onTap: () async
+                        //   {
+                        //     //go to search places screen
+                        //     var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>const SearchPlacesScreen()));
     
-                            if(responseFromSearchScreen == "obtainedDropoff")
-                              {
-                                setState(() {
-                                  openNavigationDrawer = false;
-                                });
+                        //     if(responseFromSearchScreen == "obtainedDropoff")
+                        //       {
+                        //         setState(() {
+                        //           openNavigationDrawer = false;
+                        //         });
     
-                                //draw routes- draw poly line
-                                await drawPolyLineFromOriginToDestination();
+                        //         //draw routes- draw poly line
+                        //         await drawPolyLineFromOriginToDestination();
     
-                              }
-                          },
-                          child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5) , child:  Row(
-                            children: [
-                               const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
-                               const SizedBox(width: 12.0,),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "To",
-                                    style: TextStyle(
-                                      color: Colors.grey,fontSize: 12,),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width*3/4,
-                                    child: Text(
-                                      Provider.of<AppInfo>(context).patientDropOffLocation != null
-                                          ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
-                                          : "Select Hospital",
-                                      style: const TextStyle(
-                                        color: Colors.grey,fontSize: 14,),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
-                        ),
+                        //       }
+                        //   },
+                        //   child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5) , child:  Row(
+                        //     children: [
+                        //        const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
+                        //        const SizedBox(width: 12.0,),
+                        //       Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Text(
+                        //             "To",
+                        //             style: TextStyle(
+                        //               color: Colors.grey,fontSize: 12,),
+                        //           ),
+                        //           SizedBox(
+                        //             width: MediaQuery.of(context).size.width*3/4,
+                        //             child: Text(
+                        //               Provider.of<AppInfo>(context).patientDropOffLocation != null
+                        //                   ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
+                        //                   : "Select Hospital",
+                        //               style: const TextStyle(
+                        //                 color: Colors.grey,fontSize: 14,),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ],
+                        //   )),
+                        // ),
     
-                        const SizedBox(height: 10,),
+                        // const SizedBox(height: 10,),
     
                         const Divider(
                           height: 1,
@@ -769,14 +769,7 @@ class _MainScreenState extends State<MainScreen>
                         ElevatedButton(
                           onPressed: ()
                           {
-                            if(Provider.of<AppInfo>(context,listen: false).patientDropOffLocation != null)
-                              {
-                                saveRideRequestInformation();
-                              }
-                            else
-                              {
-                                Fluttertoast.showToast(msg: "Please Select Destination First!");
-                              }
+                              saveRideRequestInformation();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
@@ -944,6 +937,14 @@ class _MainScreenState extends State<MainScreen>
     
               ),
             ),
+            Provider.of<AppInfo>(context).patientPickUpLocation == null?
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              Text("Fetching Current Location")
+            ],
+            ):Container()
           ],
         ),
       ),
