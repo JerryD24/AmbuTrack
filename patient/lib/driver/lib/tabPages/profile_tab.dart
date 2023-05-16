@@ -1,5 +1,6 @@
 import 'package:patient/driver/lib/global/global.dart';
 import 'package:flutter/material.dart';
+import 'package:patient/mainScreens/toggle_screen.dart';
 
 import '../splashScreen/driver_splash_screen.dart';
 
@@ -19,7 +20,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
         onPressed: ()
         {
           fAuth .signOut();
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> const DriverSplashScreen()));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> ToggleScreenPage()),(Route<dynamic> route) => false);
         },
       ),
     );

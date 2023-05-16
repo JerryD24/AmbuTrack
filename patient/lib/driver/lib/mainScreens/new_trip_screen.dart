@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
+
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -5,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:patient/mainScreens/search_places_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../../infoHandler/app_info.dart';
 import '../../../widgets/progress_dialog.dart';
 import '../assistants/assistant_methods.dart';
 
@@ -399,47 +404,89 @@ class _NewTripScreenState extends State<NewTripScreen> {
                         const SizedBox(
                           width: 14,
                         ),
-                        Expanded(
-                          child: Container(
-                            child: Text(
-                              widget.patientRideRequestDetails!.originAddress!,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
+                        SizedBox(
+                        width: MediaQuery.of(context).size.width*3.3/4,
+                          child: Text(
+                            widget.patientRideRequestDetails!.originAddress!,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
                             ),
                           ),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: 20.0),
 
-                    //user DropOff Address with icon
-                    Row(
-                      children: [
-                        // Image.asset(
-                        //   "images/destination.png",
-                        //   width: 30,
-                        //   height: 30,
-                        // ),
-                        const SizedBox(
-                          width: 14,
-                        ),
-                        Expanded(
-                          child: Container(
-                            child: Text(
-                              widget.patientRideRequestDetails!
-                                  .destinationAddress!,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
+                    InkWell(
+                          onTap: () async
+                          {
+                            //go to search places screen
+                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>const SearchPlacesScreen()));
+    
+                            if(responseFromSearchScreen == "obtainedDropoff")
+                              {
+    
+                                //draw routes- draw poly line
+                                // await drawPolyLineFromOriginToDestination();
+    
+                              }
+                          },
+                          child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5) , child:  Row(
+                            children: [
+                               const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
+                               const SizedBox(width: 12.0,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "To",
+                                    style: TextStyle(
+                                      color: Colors.grey,fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width*3/4,
+                                    child: Text(
+                                      Provider.of<AppInfo>(context).patientDropOffLocation != null
+                                          ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
+                                          : "Select Hospital",
+                                      style: const TextStyle(
+                                        color: Colors.grey,fontSize: 16,),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
+                            ],
+                          )),
                         ),
-                      ],
-                    ),
+
+                    // const SizedBox(height: 20.0),
+
+                    // //user DropOff Address with icon
+                    // Row(
+                    //   children: [
+                    //     // Image.asset(
+                    //     //   "images/destination.png",
+                    //     //   width: 30,
+                    //     //   height: 30,
+                    //     // ),
+                    //     const SizedBox(
+                    //       width: 14,
+                    //     ),
+                    //     SizedBox(
+                    //       width: MediaQuery.of(context).size.width*3.3/4,
+                    //       child: Text(
+                    //         widget.patientRideRequestDetails!
+                    //             .destinationAddress!,
+                    //         style: const TextStyle(
+                    //           fontSize: 16,
+                    //           color: Colors.grey,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
 
                     const SizedBox(
                       height: 24,
@@ -454,21 +501,20 @@ class _NewTripScreenState extends State<NewTripScreen> {
                     const SizedBox(height: 10.0),
 
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton.icon(
+                        buttonTitle=="Arrived" || buttonTitle=="Reached Hospital"? ElevatedButton.icon(
                           //Navigate Button
                           onPressed: () async {
-                            String url =
-                                'https://www.google.com/maps/search/?api=1&query=17.9689,79.5941&travelmode=driving';
+                            String url = "";
+                            
+                            url = buttonTitle == "Reached Hospital"?
+                             'https://www.google.com/maps/search/?api=1&query=${Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLatitude},${Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLongitude}&travelmode=driving'
+                             :'https://www.google.com/maps/search/?api=1&query=${widget.patientRideRequestDetails!.originLatLng!.latitude},${widget.patientRideRequestDetails!.originLatLng!.longitude}&travelmode=driving';
                             if (await canLaunchUrlString(url))
                               await launchUrlString(url,
                                   mode:
                                       LaunchMode.externalNonBrowserApplication);
-                            else {
-                              print(
-                                  "Not====================================================");
-                            }
                           },
                           icon: const Icon(
                             Icons.directions_car,
@@ -483,7 +529,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
+                        ):Container(),
+                        buttonTitle=="Arrived" || buttonTitle=="Reached Hospital"? 
+                        SizedBox(width: 10,):Container(),
                         ElevatedButton.icon(
                           //Arrived Button
                           onPressed: () async {
