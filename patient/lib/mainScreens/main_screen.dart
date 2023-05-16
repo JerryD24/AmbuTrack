@@ -1,9 +1,10 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,6 +14,7 @@ import 'package:patient/assistants/assistant_methods.dart';
 import 'package:patient/assistants/geofire_assistant.dart';
 import 'package:patient/mainScreens/search_places_screen.dart';
 import 'package:patient/mainScreens/select_nearest_online_ambulance_drivers_screen.dart';
+import 'package:patient/mainScreens/toggle_screen.dart';
 import 'package:patient/models/active_nearby_available_ambulance_drivers.dart';
 import 'package:patient/widgets/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -425,10 +427,10 @@ class _MainScreenState extends State<MainScreen>
 
         Fluttertoast.showToast(msg: "Search again after some time.");
 
-        Future.delayed(const Duration(milliseconds: 3000),()
-        {
-          SystemNavigator.pop();
-        });
+        // Future.delayed(const Duration(milliseconds: 3000),()
+        // {
+        //   SystemNavigator.pop();
+        // });
 
         return;
       }
@@ -627,7 +629,8 @@ class _MainScreenState extends State<MainScreen>
                   else
                     {
                       //restart or refresh app automatically, in order to refresh stats of the app
-                      SystemNavigator.pop();
+                      // SystemNavigator.pop();
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const ToggleScreenPage()),(Route<dynamic> route) => false);
                     }
     
                 },
@@ -650,7 +653,7 @@ class _MainScreenState extends State<MainScreen>
                 curve: Curves.easeIn,
                 duration: const Duration(milliseconds: 120),
                 child: Container(
-                  height: searchLocationContainerHeight,
+                  // height: searchLocationContainerHeight,
                   decoration: const BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.only(
@@ -663,30 +666,39 @@ class _MainScreenState extends State<MainScreen>
                     child: Column(
                       children: [
                         //from (current location)
-                        Padding(padding: const EdgeInsets.only(top: 5,bottom: 5,),child: 
-                        Row(
-                          children: [
-                            const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
-                            const SizedBox(width: 12.0,),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Current Location",
-                                  style: TextStyle(
-                                    color: Colors.grey,fontSize: 12,),
-                                ),
-                                Text(
-                                  Provider.of<AppInfo>(context).patientPickUpLocation != null
-                                      ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!).substring(0,35)}..."
-                                      : "Obtaining address",
-                                  style: const TextStyle(
-                                    color: Colors.grey,fontSize: 14,),
-                                ),
-                              ],
-                            ),
-                          ],
-                        )),
+                        InkWell(
+                          onTap: (){setState(() {
+                            
+                          });},
+                          child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5,),
+                          child: 
+                          Row(
+                            children: [
+                              const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
+                              const SizedBox(width: 12.0,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Current Location",
+                                    style: TextStyle(
+                                      color: Colors.grey,fontSize: 12,),
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width*3/4,
+                                    child: Text(
+                                      Provider.of<AppInfo>(context).patientPickUpLocation != null
+                                          ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!).substring(0,35)}..."
+                                          : "Obtaining address",
+                                      style: const TextStyle(
+                                        color: Colors.grey,fontSize: 14,),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                        ),
     
                         const SizedBox(height: 10,),
     
@@ -723,17 +735,20 @@ class _MainScreenState extends State<MainScreen>
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     "To",
                                     style: TextStyle(
                                       color: Colors.grey,fontSize: 12,),
                                   ),
-                                  Text(
-                                    Provider.of<AppInfo>(context).patientDropOffLocation != null
-                                        ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
-                                        : "Where to go",
-                                    style: const TextStyle(
-                                      color: Colors.grey,fontSize: 14,),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width*3/4,
+                                    child: Text(
+                                      Provider.of<AppInfo>(context).patientDropOffLocation != null
+                                          ? Provider.of<AppInfo>(context).patientDropOffLocation!.locationName!
+                                          : "Select Hospital",
+                                      style: const TextStyle(
+                                        color: Colors.grey,fontSize: 14,),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1060,7 +1075,7 @@ class _MainScreenState extends State<MainScreen>
     Geofire.queryAtLocation(
         patientCurrentPosition!.latitude, patientCurrentPosition!.longitude, 10000)!
         .listen((map) {
-      print(map);
+      // print(map);
       if (map != null) {
         var callBack = map['callBack'];
 

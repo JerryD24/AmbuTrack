@@ -20,6 +20,8 @@ class _SelectNearestActiveAmbulanceDriversScreenState extends State<SelectNeares
 
   @override
   Widget build(BuildContext context) {
+    print(dList.length.toString()+"===========================================");
+    // dList.clear();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -48,7 +50,7 @@ class _SelectNearestActiveAmbulanceDriversScreenState extends State<SelectNeares
       body: ListView.builder
         (
         itemCount: dList.length,
-        physics: NeverScrollableScrollPhysics(),
+        physics: AlwaysScrollableScrollPhysics(),
         itemBuilder: ( BuildContext context, int index)
         {
           return GestureDetector(
@@ -60,35 +62,31 @@ class _SelectNearestActiveAmbulanceDriversScreenState extends State<SelectNeares
               Navigator.pop(context, "driverChosen");
             },
             child: Card(
-              color: Colors.grey,
+              color: Color.fromARGB(255, 37, 117, 77),
               elevation: 3,
               shadowColor: Colors.green,
               margin: const EdgeInsets.all(8),
               child: ListTile(
-                title: Expanded(
-                  child: Column(
-
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                    // dList[index] ,
-                      Text(
-                        dList[index]["name"],
-                        style: const TextStyle(
-                          fontSize: 25,
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      dList[index]["name"],
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                      ),
+                    ),
+                    Text(
+                      dList[index]["ambulance_details"]["Ambulance-number"],
+                      style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        ),
+                          color: Colors.white
                       ),
-                      Text(
-                        dList[index]["ambulance_details"]["Ambulance-number"],
-                        style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

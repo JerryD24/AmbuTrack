@@ -86,7 +86,8 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
                       //   height: 30,
                       // ),
                       const SizedBox(width: 14,),
-                      Container(
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width*3/5,
                         child: Text(
                           widget.patientRideRequestDetails!.originAddress!,
                           style: const TextStyle(
@@ -109,14 +110,13 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
                       //   height: 30,
                       // ),
                       const SizedBox(width: 14,),
-                      Expanded(
-                        child: Container(
-                          child: Text(
-                            widget.patientRideRequestDetails!.destinationAddress!,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width*3/5,
+                        child: Text(
+                          widget.patientRideRequestDetails!.destinationAddress!,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
