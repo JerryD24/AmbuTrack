@@ -1,12 +1,14 @@
-// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
+// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures, use_build_context_synchronously
 
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:patient/driver/lib/mainScreens/main_screen.dart';
 import 'package:patient/mainScreens/search_places_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -418,7 +420,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                     ),
 
 
-                    InkWell(
+                    buttonTitle!="Arrived"? InkWell(
                           onTap: () async
                           {
                             //go to search places screen
@@ -426,9 +428,56 @@ class _NewTripScreenState extends State<NewTripScreen> {
     
                             if(responseFromSearchScreen == "obtainedDropoff")
                               {
+                                showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (BuildContext c) => ProgressDialog(
+                                  message: "Please wait...",
+                                ),
+                              );
+
+                              await drawPolyLineFromOriginToDestination(
+                                  widget
+                                      .patientRideRequestDetails!.originLatLng!,
+                                      LatLng(Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLatitude!, Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLongitude!)
+                                  
+                                  );
+
+                              Navigator.pop(context);
     
-                                //draw routes- draw poly line
-                                // await drawPolyLineFromOriginToDestination();
+                              //   DatabaseReference authorityReference =
+                              //     FirebaseDatabase.instance
+                              //         .ref("Ambulance Request")
+                              //         .child(widget.patientRideRequestDetails!
+                              //             .rideRequestId!);
+                              // DatabaseEvent event =
+                              //     await authorityReference.once();
+
+                              // String destinationLatitude = (event.snapshot.value as Map)["destination"]["latitude"];
+                              // String destinationLongitude =
+                              //     (event.snapshot.value as Map)["destination"]
+                              //         ["longitude"];
+                              // String destinationAddress = (event.snapshot.value
+                              //     as Map)["destinationAddress"];
+
+                              // DatabaseReference databaseReferenceForAuthority =
+                              //     FirebaseDatabase.instance
+                              //         .ref() //For Authority
+                              //         .child(
+                              //             "Ambulance On Work") //For Authority
+                              //         .child(widget.patientRideRequestDetails!
+                              //             .rideRequestId!)
+                              //         .child("driverId");
+
+                              // databaseReferenceForAuthority
+                              //     .child("destination")
+                              //     .update({"latitude": destinationLatitude});
+                              // databaseReferenceForAuthority
+                              //     .child("destination")
+                              //     .update({"longitude": destinationLongitude});
+
+                              // databaseReferenceForAuthority.update(
+                              //     {"destinationAddress": destinationAddress});
     
                               }
                           },
@@ -459,7 +508,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                               ),
                             ],
                           )),
-                        ),
+                        ):Container(),
 
                     // const SizedBox(height: 20.0),
 
@@ -547,64 +596,17 @@ class _NewTripScreenState extends State<NewTripScreen> {
                                   .child("status")
                                   .set(rideRequestStatus);
 
-                              DatabaseReference authorityReference =
-                                  FirebaseDatabase.instance
-                                      .ref("Ambulance Request")
-                                      .child(widget.patientRideRequestDetails!
-                                          .rideRequestId!);
-                              DatabaseEvent event =
-                                  await authorityReference.once();
-
-                              String destinationLatitude = (event.snapshot.value
-                                  as Map)["destination"]["latitude"];
-                              String destinationLongitude =
-                                  (event.snapshot.value as Map)["destination"]
-                                      ["longitude"];
-                              String destinationAddress = (event.snapshot.value
-                                  as Map)["destinationAddress"];
-
-                              DatabaseReference databaseReferenceForAuthority =
-                                  FirebaseDatabase.instance
-                                      .ref() //For Authority
-                                      .child(
-                                          "Ambulance On Work") //For Authority
-                                      .child(widget.patientRideRequestDetails!
-                                          .rideRequestId!)
-                                      .child("driverId");
-
-                              databaseReferenceForAuthority
-                                  .child("destination")
-                                  .update({"latitude": destinationLatitude});
-                              databaseReferenceForAuthority
-                                  .child("destination")
-                                  .update({"longitude": destinationLongitude});
-
-                              databaseReferenceForAuthority.update(
-                                  {"destinationAddress": destinationAddress});
-
                               setState(() {
                                 buttonTitle = "Start Ambulance";
                                 buttonColor = Colors.lightBlueAccent;
                               });
-
-                              showDialog(
-                                barrierDismissible: false,
-                                context: context,
-                                builder: (BuildContext c) => ProgressDialog(
-                                  message: "Please wait...",
-                                ),
-                              );
-
-                              await drawPolyLineFromOriginToDestination(
-                                  widget
-                                      .patientRideRequestDetails!.originLatLng!,
-                                  widget.patientRideRequestDetails!
-                                      .destinationLatLng!);
-
-                              Navigator.pop(context);
                             }
                             //Patient is already in the ambulance
                             else if (rideRequestStatus == "arrived") {
+                              if(Provider.of<AppInfo>(context,listen: false).patientDropOffLocation == null){
+                                Fluttertoast.showToast(msg: "Select Hospital to start");
+                                return;
+                              }
                               rideRequestStatus = "wayToHospital";
 
                               FirebaseDatabase.instance
@@ -690,10 +692,11 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
     /////////////////////////////////////
 
-    Navigator.pop(context);
+    // Navigator.pop(context);
 
     streamSubscriptionAmbulanceDriverLivePosition!.cancel();
-    Navigator.pop(context);
+    // Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> MainScreen()),(Route<dynamic> route) => false);
   }
 
   saveAssignedDriverDetailsToUserRideRequest() async {
