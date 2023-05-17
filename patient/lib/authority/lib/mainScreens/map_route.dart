@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:patient/authority/lib/global/global.dart';
-import 'package:patient/authority/lib/mainScreens/home_tab.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:patient/authority/lib/global/global.dart';
+import 'package:patient/authority/lib/mainScreens/home_tab.dart';
 
 import '../global/map_key.dart';
 
@@ -14,7 +14,7 @@ import '../global/map_key.dart';
 class MapRouteScreen extends StatefulWidget {
   HomeTabScreen? homeTabScreen;
 
-  MapRouteScreen({
+  MapRouteScreen({super.key, 
     this.homeTabScreen
   });
 
@@ -27,8 +27,8 @@ class MapRouteScreenState extends State<MapRouteScreen> {
 
   final Completer<GoogleMapController> _controller = Completer();
 
-  final LatLng sourceLocation=LatLng(double.parse(sourceLocationLatitude!), double.parse(sourceLocationLongitude!));
-  final LatLng destinationLocation= LatLng(double.parse(destinationLocationLatitude!), double.parse(destinationLocationLongitude!));
+  LatLng sourceLocation=LatLng(double.parse(sourceLocationLatitude!), double.parse(sourceLocationLongitude!));
+  LatLng destinationLocation= LatLng(double.parse(destinationLocationLatitude!), double.parse(destinationLocationLongitude!));
 
 
 
@@ -47,7 +47,7 @@ class MapRouteScreenState extends State<MapRouteScreen> {
 
     // Request location permissions
     permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
+    if (permission == LocationPermission.denied){
       throw 'Location permissions are denied';
     } else if (permission == LocationPermission.deniedForever) {
       throw 'Location permissions are permanently denied';
@@ -61,25 +61,39 @@ class MapRouteScreenState extends State<MapRouteScreen> {
     const dur= Duration(milliseconds: 3000);
     Timer.periodic( dur, (timer) async{
       DatabaseEvent event = await dbReference.once();
-      sourceLocationLatitude = (event.snapshot.value as Map)["driverId"]["DriverLocation"]["latitude"];
-      sourceLocationLongitude =(event.snapshot.value as Map) ["driverId"]["DriverLocation"]["longitude"];
-      LatLng sourceLocation=LatLng(double.parse(sourceLocationLatitude!), double.parse(sourceLocationLongitude!));
+      setState(() {
+        sourceLocationLatitude = (event.snapshot.value as Map)["DriverLocation"]["latitude"].toString();
+        sourceLocationLongitude =(event.snapshot.value as Map) ["DriverLocation"]["longitude"].toString();
+        sourceLocation=LatLng(double.parse(sourceLocationLatitude.toString()), double.parse(sourceLocationLongitude.toString()));
+        print(sourceLocation.toString()+"+++++++++++++++++++++++++++++++++++++++++++++++");
+      });
+      
+      
+      var snap = event.snapshot.value as Map;
+
+      // print("------------------------------auth");
+      if(snap["destination"]!=null){
+        destinationLocationLatitude = snap["destination"]["Lat"].toString();
+        destinationLocationLongitude = snap["destination"]["Long"].toString();
+        destinationLocation = LatLng(double.parse(destinationLocationLatitude!), double.parse(destinationLocationLongitude!));
+      }
+      getPolyPoints();
     });
   }
   void getPolyPoints() async{
-
-    PolylinePoints polylinePoints=PolylinePoints();
-    PolylineResult result=await polylinePoints.getRouteBetweenCoordinates(
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       mapKey,
-      PointLatLng(sourceLocation!.latitude,sourceLocation!.longitude),
-      PointLatLng(destinationLocation!.latitude,destinationLocation!.longitude),
+      PointLatLng(sourceLocation.latitude,sourceLocation.longitude),
+      PointLatLng(destinationLocation.latitude,destinationLocation.longitude),
     );
     if(result.points.isNotEmpty){
-      result.points.forEach(
-            (PointLatLng point) => polylineCoordinates.add(
+      polylineCoordinates.clear();
+      for (var point in result.points) {
+        polylineCoordinates.add(
           LatLng(point.latitude,point.longitude),
-        ),
-      );
+        );
+      }
       setState(() {});
     }
   }
@@ -104,7 +118,7 @@ class MapRouteScreenState extends State<MapRouteScreen> {
         myLocationEnabled: false,
         mapType: MapType.normal,
         polylines:{
-          Polyline(polylineId:PolylineId("route"),
+          Polyline(polylineId:const PolylineId("route"),
             points: polylineCoordinates,
             color: Colors.redAccent,
             width: 6,
@@ -116,12 +130,12 @@ class MapRouteScreenState extends State<MapRouteScreen> {
             position: sourceLocation,
           ), //Marker
           Marker(
-            markerId: MarkerId("destination"),
+            markerId: const MarkerId("destination"),
             position: destinationLocation,
           ),
           Marker(
-            markerId: MarkerId("liveLocation"),
-            position: destinationLocation,
+            markerId: const MarkerId("liveLocation"),
+            position: sourceLocation,
           ),
         },
       ),

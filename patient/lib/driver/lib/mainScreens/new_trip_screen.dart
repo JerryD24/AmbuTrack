@@ -11,21 +11,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:patient/driver/lib/mainScreens/main_screen.dart';
 import 'package:patient/mainScreens/search_places_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../infoHandler/app_info.dart';
 import '../../../widgets/progress_dialog.dart';
 import '../assistants/assistant_methods.dart';
-
-import '../assistants/black_theme_google_map.dart';
 import '../global/global.dart';
 import '../models/patientRideRequestInformation.dart';
 
 class NewTripScreen extends StatefulWidget {
   PatientRideRequestInformation? patientRideRequestDetails;
 
-  NewTripScreen({this.patientRideRequestDetails});
+  NewTripScreen({super.key, this.patientRideRequestDetails});
 
   @override
   State<NewTripScreen> createState() => _NewTripScreenState();
@@ -44,9 +41,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
   Color? buttonColor = Colors.green;
   String statusBtn = "accepted";
 
-  Set<Marker> setOfMarkers = Set<Marker>();
-  Set<Circle> setOfCircle = Set<Circle>();
-  Set<Polyline> setOfPolyline = Set<Polyline>();
+  Set<Marker> setOfMarkers = <Marker>{};
+  Set<Circle> setOfCircle = <Circle>{};
+  Set<Polyline> setOfPolyline = <Polyline>{};
   List<LatLng> polyLinePositionCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
 
@@ -64,7 +61,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
   get patientPickUpLatLng => null;
 
-  var patiientPickUpLocation;
+  late LatLng patiientPickUpLocation;
 
   //Step 1:: when driver accepts the user ride request
   // originLatLng = driverCurrent Location
@@ -95,10 +92,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
     polyLinePositionCoordinates.clear();
 
     if (decodedPolyLinePointsResultList.isNotEmpty) {
-      decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
+      for (var pointLatLng in decodedPolyLinePointsResultList) {
         polyLinePositionCoordinates
             .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-      });
+      }
     }
 
     setOfPolyline.clear();
@@ -202,9 +199,16 @@ class _NewTripScreenState extends State<NewTripScreen> {
   getAmbulanceDriversLocationUpdatesAtRealTime() {
     LatLng oldLatLng = LatLng(0, 0);
     streamSubscriptionAmbulanceDriverLivePosition =
-        Geolocator.getPositionStream().listen((Position position) {
+      Geolocator.getPositionStream().listen((Position position){
       driverCurrentPosition = position;
       onlineDriverCurrentPosition = position;
+
+      // FirebaseDatabase.instance
+      //     .ref()
+      //     .child("Ambulance Request")
+      //     .child(widget.patientRideRequestDetails!.rideRequestId!)
+      //     .child("DriverLocation")
+      //     .set({"latitude":onlineDriverCurrentPosition!.latitude,"longitude":onlineDriverCurrentPosition!.longitude});
 
       LatLng latLngLiveDriverCurrentPosition = LatLng(
         onlineDriverCurrentPosition!.latitude,
@@ -236,13 +240,20 @@ class _NewTripScreenState extends State<NewTripScreen> {
         "latitude": onlineDriverCurrentPosition!.latitude.toString(),
         "longitude": onlineDriverCurrentPosition!.longitude.toString(),
       };
-      FirebaseDatabase.instance
-          .ref()
-          .child("Ambulance Request")
-          .child(widget.patientRideRequestDetails!.rideRequestId!)
-          .child("DriverLocation")
-          .set(driverLatLngDataMap);
-    });
+      // const dur= Duration(milliseconds: 3000);
+      // Timer.periodic( dur, (timer) async{
+      //   FirebaseDatabase.instance
+      //     .ref()
+      //     .child("Ambulance Request")
+      //     .child(widget.patientRideRequestDetails!.rideRequestId!)
+      //     .child("DriverLocation")
+      //     .set(driverLatLngDataMap);
+      //   });
+            
+      }
+      ); 
+      
+      
   }
 
   updateDurationTimeAtRealTime() async {
@@ -256,19 +267,27 @@ class _NewTripScreenState extends State<NewTripScreen> {
       var originLatlng = LatLng(onlineDriverCurrentPosition!.latitude,
           onlineDriverCurrentPosition!.longitude); // Drive currentLocation
 
-      var destinationLatlng;
+      LatLng? destinationLatlng;
 
       if (rideRequestStatus == "accepted") {
         destinationLatlng = widget
-            .patientRideRequestDetails!.originLatLng; //patient pickup location
-      } else {
-        destinationLatlng = widget.patientRideRequestDetails!
-            .destinationLatLng; //patient drop off location
+            .patientRideRequestDetails!.originLatLng;
+          //   DatabaseReference dbReference = FirebaseDatabase.instance.ref("Ambulance Request").child("$uniqueId");
+          // const dur= Duration(milliseconds: 3000);
+          // Timer.periodic( dur, (timer) async{
+            
+          //   }
+          // ); 
+    //patient pickup location
+      } else if(rideRequestStatus=="wayToHospital") {
+        destinationLatlng = LatLng(Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLatitude!, Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLongitude!) ; //patient drop off location
+      }
+      else{
+        destinationLatlng = widget.patientRideRequestDetails!.originLatLng;
       }
 
       var directionInformation =
-          await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-              originLatlng, destinationLatlng);
+          await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatlng, destinationLatlng!);
 
       if (directionInformation != null) {
         setState(() {
@@ -283,6 +302,26 @@ class _NewTripScreenState extends State<NewTripScreen> {
   @override
   Widget build(BuildContext context) {
     createAmbulanceDriverIconMarker();
+
+    const dur= Duration(milliseconds: 3000);
+          Timer.periodic( dur, (timer) async{
+
+            
+            if(rideRequestStatus=="wayToHospital"){
+              Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+              // print("+++++++++++++++++++++++gggggggggggggggggggggg+++++++++++++=");
+            FirebaseDatabase.instance
+          .ref()
+          .child("Ambulance Request")
+          .child(widget.patientRideRequestDetails!.rideRequestId!)
+          .child("DriverLocation")
+          .set({"latitude":cPosition.latitude,"longitude":cPosition.longitude});
+            }
+            }
+          ); 
+
+
+
 
     return Scaffold(
       body: Stack(
@@ -312,7 +351,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
               var patientPickUpLatLng =
                   widget.patientRideRequestDetails!.originLatLng;
-              patiientPickUpLocation = patientPickUpLatLng;
+                  
+                  patiientPickUpLocation = widget.patientRideRequestDetails!.originLatLng!;
+                  print("$patiientPickUpLocation------------------------------patlocccc");
+              
 
               drawPolyLineFromOriginToDestination(
                   driverCurrentLatLng, patientPickUpLatLng!);
@@ -425,7 +467,6 @@ class _NewTripScreenState extends State<NewTripScreen> {
                           {
                             //go to search places screen
                             var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>const SearchPlacesScreen()));
-    
                             if(responseFromSearchScreen == "obtainedDropoff")
                               {
                                 showDialog(
@@ -445,11 +486,12 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
                               Navigator.pop(context);
     
-                              //   DatabaseReference authorityReference =
-                              //     FirebaseDatabase.instance
-                              //         .ref("Ambulance Request")
-                              //         .child(widget.patientRideRequestDetails!
-                              //             .rideRequestId!);
+                              // DatabaseReference authorityReference =
+                              //   FirebaseDatabase.instance
+                              //       .ref("Ambulance Request")
+                              //       .child(widget.patientRideRequestDetails!
+                              //           .rideRequestId!);
+
                               // DatabaseEvent event =
                               //     await authorityReference.once();
 
@@ -616,6 +658,13 @@ class _NewTripScreenState extends State<NewTripScreen> {
                                       .rideRequestId!)
                                   .child("status")
                                   .set(rideRequestStatus);
+                              FirebaseDatabase.instance
+                                  .ref()
+                                  .child("Ambulance Request")
+                                  .child(widget.patientRideRequestDetails!
+                                      .rideRequestId!)
+                                  .child("destination")
+                                  .set({"Lat":Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLatitude,"Long":Provider.of<AppInfo>(context,listen:false).patientDropOffLocation!.locationLongitude});
 
                               setState(() {
                                 buttonTitle = "Reached Hospital";
@@ -711,14 +760,11 @@ class _NewTripScreenState extends State<NewTripScreen> {
       "longitude": driverCurrentPosition!.longitude.toString(),
     };
     databaseReference.child("DriverLocation").set(driverLocationDataMap);
-
     databaseReference.child("status").set("accepted");
     databaseReference.child("driverId").set(onlineDriverData.id);
     databaseReference.child("driverName").set(onlineDriverData.name);
     databaseReference.child("driverPhone").set(onlineDriverData.phone);
-    databaseReference
-        .child("ambulanceNumber")
-        .set(onlineDriverData.ambulanceNumber);
+    databaseReference.child("ambulanceNumber").set(onlineDriverData.ambulanceNumber);
 
 //////////////////////////////////////////For Authority///////////////////////////////////////////////////
 
@@ -734,6 +780,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
     databaseReferenceForAuthority
         .child("DriverLocation")
         .set(driverLocationDataMapForAuthority);
+
     databaseReferenceForAuthority
         .child("driverName")
         .set(onlineDriverData.name);
@@ -743,9 +790,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
     databaseReferenceForAuthority
         .child("ambulanceNumber")
         .set(onlineDriverData.ambulanceNumber);
+        // print(widget.patientRideRequestDetails!.originLatLng!.latitude.toString()+"-----------------------------------patientloc");
     databaseReferenceForAuthority
         .child("patientPikUpLocation")
-        .set(patiientPickUpLocation);
+        .set({"Address":widget.patientRideRequestDetails!.originAddress,"Lat":widget.patientRideRequestDetails!.originLatLng!.latitude,"Long":widget.patientRideRequestDetails!.originLatLng!.longitude});
 
     DatabaseReference authorityReference = FirebaseDatabase.instance
         .ref("Ambulance Request")
@@ -755,40 +803,36 @@ class _NewTripScreenState extends State<NewTripScreen> {
     DatabaseEvent event = await authorityReference.once();
 
     String originAddress = (event.snapshot.value as Map)["originAddress"];
-    String destinationAddress =
-        (event.snapshot.value as Map)["destinationAddress"];
+    String destinationAddress = (event.snapshot.value as Map)["destinationAddress"];
 
     String originLatitude = (event.snapshot.value as Map)["origin"]["latitude"];
-    String originLongitude =
-        (event.snapshot.value as Map)["origin"]["longitude"];
+    String originLongitude = (event.snapshot.value as Map)["origin"]["longitude"];
 
-    String destinationLatitude =
-        (event.snapshot.value as Map)["destination"]["latitude"];
-    String destinationLongitude =
-        (event.snapshot.value as Map)["destination"]["longitude"];
+    // String destinationLatitude = (event.snapshot.value as Map)["destination"]["latitude"];
+    // String destinationLongitude = (event.snapshot.value as Map)["destination"]["longitude"];
 
-    databaseReferenceForAuthority.child("originAddress").set(originAddress);
-    databaseReferenceForAuthority
-        .child("destinationAddress")
-        .set(originAddress);
+    // databaseReferenceForAuthority.child("originAddress").set(originAddress);
+    // databaseReferenceForAuthority
+    //     .child("destinationAddress")
+    //     .set(originAddress);
 
-    databaseReferenceForAuthority
-        .child("origin")
-        .child("latitude")
-        .set(originLatitude);
-    databaseReferenceForAuthority
-        .child("origin")
-        .child("longitude")
-        .set(originLongitude);
+    // databaseReferenceForAuthority
+    //     .child("origin")
+    //     .child("latitude")
+    //     .set(originLatitude);
+    // databaseReferenceForAuthority
+    //     .child("origin")
+    //     .child("longitude")
+    //     .set(originLongitude);
 
-    databaseReferenceForAuthority
-        .child("destination")
-        .child("latitude")
-        .set(originLatitude);
-    databaseReferenceForAuthority
-        .child("destination")
-        .child("longitude")
-        .set(originLongitude);
+    // databaseReferenceForAuthority
+    //     .child("destination")
+    //     .child("latitude")
+    //     .set(originLatitude);
+    // databaseReferenceForAuthority
+    //     .child("destination")
+    //     .child("longitude")
+    //     .set(originLongitude);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     saveRideRequestIdToDriverHistory();

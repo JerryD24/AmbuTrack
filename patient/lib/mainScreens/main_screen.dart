@@ -17,6 +17,7 @@ import 'package:patient/mainScreens/toggle_screen.dart';
 import 'package:patient/models/active_nearby_available_ambulance_drivers.dart';
 import 'package:patient/widgets/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../global/global.dart';
 import '../infoHandler/app_info.dart';
@@ -250,12 +251,9 @@ class _MainScreenState extends State<MainScreen>
     referenceAmbulanceRequest = FirebaseDatabase.instance.ref().child("Ambulance Request").push();
 
     var originLocation = Provider.of<AppInfo>(context,listen: false).patientPickUpLocation;
-    // var destinationLocation = Provider.of<AppInfo>(context,listen: false).patientDropOffLocation;
-
+   
     Map originLocationMap =
     {
-      //Key : value,
-
       "latitude": originLocation!.locationLatitude.toString(),
       "longitude": originLocation.locationLongitude.toString(),
     };
@@ -424,7 +422,7 @@ class _MainScreenState extends State<MainScreen>
           pLinesCoOrdinatesList.clear();
         });
 
-        Fluttertoast.showToast(msg: "Search again after some time.");
+        Fluttertoast.showToast(msg: "No Ambulance near by.");
 
         // Future.delayed(const Duration(milliseconds: 3000),()
         // {
@@ -557,7 +555,10 @@ class _MainScreenState extends State<MainScreen>
             .then((dataSnapshot)
         {
           var driverKeyInfo =dataSnapshot.snapshot.value;
-          dList.add(driverKeyInfo);
+          if(!dList.contains(driverKeyInfo)) {
+            dList.add(driverKeyInfo);
+            // print(dList.toString()+"=================================================dlist");
+          }
 
         });
       }
@@ -910,7 +911,7 @@ class _MainScreenState extends State<MainScreen>
                         child: ElevatedButton.icon(
                             onPressed: ()
                             {
-    
+                              launch("tel://"+driverPhone.toString());
                             },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
@@ -940,6 +941,7 @@ class _MainScreenState extends State<MainScreen>
             Provider.of<AppInfo>(context).patientPickUpLocation == null?
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CircularProgressIndicator(),
               Text("Fetching Current Location")

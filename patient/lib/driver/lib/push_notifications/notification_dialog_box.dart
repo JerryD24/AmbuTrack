@@ -23,9 +23,6 @@ class NotificationDialogBox extends StatefulWidget
   State<NotificationDialogBox> createState() => _NotificationDialogBoxState();
 }
 
-
-
-
 class _NotificationDialogBoxState extends State<NotificationDialogBox>
 {
   @override
@@ -242,26 +239,21 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
           Fluttertoast.showToast(msg: "This ride request does not exist.");
         }
 
-
       if(getRideRequestId == widget.patientRideRequestDetails!.rideRequestId)
-        {
-
-          FirebaseDatabase.instance.ref()
-              .child("Drivers")
-              .child(currentFirebaseUser!.uid)
-              .child("newRideStatus")
-              .set("accepted");
-          AssistantMethods.pauseLiveLocationUpdates();
-
-          //send the driver to new Ride Screen
-          Navigator.push(context, MaterialPageRoute(builder: (c) => NewTripScreen(patientRideRequestDetails: widget.patientRideRequestDetails)));
-
-
+      {
+        FirebaseDatabase.instance.ref()
+            .child("Drivers")
+            .child(currentFirebaseUser!.uid)
+            .child("newRideStatus")
+            .set("accepted");
+        AssistantMethods.pauseLiveLocationUpdates();
+        //send the driver to new Ride Screen
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c) => NewTripScreen(patientRideRequestDetails: widget.patientRideRequestDetails)),(Route<dynamic> route) => false);
       }
       else
-        {
-          Fluttertoast.showToast(msg: "Patient deleted the Ambulance Request.");
-        }
+      {
+        Fluttertoast.showToast(msg: "Patient deleted the Ambulance Request.");
+      }
     });
   }
 }

@@ -39,22 +39,21 @@ class _HomeTabScreen extends State<HomeTabScreen> {
               {
                 return GestureDetector(
                     onTap: ()
-                {
-                  setState(() {
-                    uniqueId = snapshot.key;
-                    chosenDriverId = snapshot.child("driverId").toString();
-                    sourceLocationLatitude = (snapshot.value as Map)["driverId"]["DriverLocation"]["latitude"];
-                    sourceLocationLongitude =(snapshot.value as Map) ["driverId"]["DriverLocation"]["longitude"];
+                    {
+                      setState(() {
+                        uniqueId = snapshot.key;
+                        chosenDriverId = snapshot.child("driverId").toString();
+                        sourceLocationLatitude = (snapshot.value as Map)["driverId"]["DriverLocation"]["latitude"].toString();
+                        sourceLocationLongitude =(snapshot.value as Map) ["driverId"]["DriverLocation"]["longitude"].toString();
 
-                    destinationLocationLatitude= (snapshot.value as Map)["driverId"]["destination"]["latitude"];
-                    destinationLocationLongitude=(snapshot.value as Map)["driverId"]["destination"]["longitude"];
-
-                  });
-                  //Change LoginScreen() to OrderTrackingPage
-                  //Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
-                  Navigator.pop(context, "driverChosen");
-                  Navigator.push(context, MaterialPageRoute(builder: (c)=> MapRouteScreen()));
-                },
+                        destinationLocationLatitude= (snapshot.value as Map)["driverId"]["patientPikUpLocation"]["Lat"].toString();
+                        destinationLocationLongitude=(snapshot.value as Map)["driverId"]["patientPikUpLocation"]["Long"].toString();
+                      });
+                      //Change LoginScreen() to OrderTrackingPage
+                      //Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+                      // Navigator.pop(context, "driverChosen");
+                      Navigator.push(context, MaterialPageRoute(builder: (c)=> MapRouteScreen()));
+                    },
                     child: ListTile(
                       tileColor: Colors.white38,
                       title: Padding(
@@ -88,9 +87,8 @@ class _HomeTabScreen extends State<HomeTabScreen> {
                                   color: Colors.grey
                               ),
                             ),
-
                             Text(
-                              snapshot.child("driverId").child("destinationAddress").value.toString(),
+                              snapshot.child("driverId").child("patientPikUpLocation").child("Address").value.toString(),
                               style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
