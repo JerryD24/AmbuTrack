@@ -1,19 +1,17 @@
-import 'dart:async';
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously, duplicate_ignore
 
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:patient/driver/lib/splashScreen/driver_splash_screen.dart';
-import 'package:patient/authority/lib/splashScreen/authority_splash_screen.dart';
+import 'package:patient/authority/lib/authentication/login_screen.dart' as auth_login;
+import 'package:patient/authority/lib/mainScreens/main_screen.dart' as authority_main_screen;
+import 'package:patient/driver/lib/authentication/login_screen.dart' as driver_login;
+import 'package:patient/driver/lib/mainScreens/main_screen.dart' as driver_main_screen;
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../authentication/login_screen.dart';
-import 'package:patient/driver/lib/mainScreens/main_screen.dart' as driver_main_screen;
-import 'package:patient/authority/lib/mainScreens/main_screen.dart' as authority_main_screen;
-
-
 import '../global/global.dart';
 import 'main_screen.dart';
 
@@ -25,6 +23,22 @@ class ToggleScreenPage extends StatefulWidget {
 }
 
 class _ToggleScreenPageState extends State<ToggleScreenPage> {
+  check(userType) async {
+    DatabaseReference userRef = FirebaseDatabase.instance
+        .ref()
+        .child(userType)
+        .child(fAuth.currentUser!.uid);
+    DatabaseEvent snap = await userRef.once();
+      if(snap.snapshot.value != null)
+      {
+        return snap.snapshot;
+      }
+      return null;
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,9 +48,10 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ToggleSwitch(
-              minWidth: 90.0,
+              // minWidth: MediaQuery.of(context).size.width/3,
               minHeight: 70.0,
-              initialLabelIndex: 0,
+              minWidth: 90,
+              // initialLabelIndex: 0,
               cornerRadius: 20.0,
               activeFgColor: Colors.white,
               inactiveBgColor: Colors.grey,
@@ -47,6 +62,13 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
                 FontAwesomeIcons.ambulance,
                 FontAwesomeIcons.university
               ],
+              // isVertical: true,
+              dividerMargin: 0,
+              // labels: [
+              //   "Patient",
+              //   "Ambulance",
+              //   "Authority"
+              // ],
               iconSize: 30.0,
 
               borderColor: [Color(0xff3b5998), Color(0xff8b9dc3), Color(0xff00aeff), Color(0xff0077f2), Color(0xff962fbf), Color(0xff4f5bd5)],
@@ -62,45 +84,50 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
 
 
             ElevatedButton(
-              onPressed: (){
+              onPressed: () async {
               if(toggleIndex == 0)
+              {
+                var x = fAuth.currentUser != null ? await AssistantMethods.readCurrentOnlineUserInfo() : null;
+                if(x != null)
                 {
-                    fAuth.currentUser != null ? AssistantMethods.readCurrentOnlineUserInfo() : null;
-                      if(fAuth.currentUser != null)
-                        {
-                          currentFirebaseUser = fAuth.currentUser;
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  MainScreen()),(Route<dynamic> route) => false);
-                        }
-                      else
-                        {
-                          Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
-                        }
+                  currentFirebaseUser = fAuth.currentUser;
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  MainScreen()),(Route<dynamic> route) => false);
                 }
+                else
+                {
+                  fAuth.signOut();
+                  Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+                }
+              }
               if(toggleIndex==1)
               {
-                if(fAuth.currentUser != null)
+                var x = fAuth.currentUser != null ? await check("Drivers") : null;
+                if(x != null)
                 {
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> driver_main_screen.MainScreen()),(Route<dynamic> route) => false);
                 }
                 else
                 {
-                  Navigator.push(context, MaterialPageRoute(builder: (c)=>  DriverSplashScreen()));
+                  fAuth.signOut();
+                  Navigator.push(context, MaterialPageRoute(builder: (c)=>  driver_login.LoginScreen()));
                 }
                 // Navigator.push(context, MaterialPageRoute(builder: (c)=>  DriverSplashScreen()));
                 Fluttertoast.showToast(msg: " You have selected as Driver");
               }
               if(toggleIndex==2)
+              {
+                var x = fAuth.currentUser != null ? await check("Authority") : null;
+                if(x != null)
                 {
-                  if(fAuth.currentUser != null)
-                  {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> authority_main_screen.MainScreen()),(Route<dynamic> route) => false);
-                  }
-                  else
-                  {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=>  AuthoritySplashScreen()));
-                  }
-                  Fluttertoast.showToast(msg: " You have selected as Authority");
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> authority_main_screen.MainScreen()),(Route<dynamic> route) => false);
                 }
+                else
+                {
+                  fAuth.signOut();
+                  Navigator.push(context, MaterialPageRoute(builder: (c)=>  auth_login.LoginScreen()));
+                }
+                Fluttertoast.showToast(msg: " You have selected as Authority");
+              }
             },
 
               style: ElevatedButton.styleFrom(
@@ -108,7 +135,7 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
                   fixedSize: const Size(200, 50),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
-              child: const Text("Select",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.blueGrey)),
+              child: const Text("Proceed",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.blueGrey)),
 
             )
           ],

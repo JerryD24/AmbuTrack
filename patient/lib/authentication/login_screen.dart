@@ -1,9 +1,13 @@
 
+// ignore_for_file: prefer_const_constructors
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:patient/authentication/signup_screen.dart';
+import 'package:patient/driver/lib/mainScreens/main_screen.dart';
+import 'package:patient/mainScreens/toggle_screen.dart';
 
 import '../global/global.dart';
 import '../splashScreen/splash_screen.dart';
@@ -71,13 +75,13 @@ class _LoginScreenState extends State<LoginScreen>
         {
           currentFirebaseUser =firebaseUser;
           Fluttertoast.showToast(msg: "Login Successful.");
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()),(Route<dynamic> route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> MainScreen()),(Route<dynamic> route) => false);
         }
         else
         {
           Fluttertoast.showToast(msg: "No Record Exist with this Email.");
           fAuth.signOut();
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const ToggleScreenPage()),(Route<dynamic> route) => false);
         }
       });
 

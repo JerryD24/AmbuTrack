@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:patient/mainScreens/toggle_screen.dart';
 import 'package:patient/splashScreen/splash_screen.dart';
 
 import '../global/global.dart';
@@ -121,7 +124,7 @@ class _MyDrawerState extends State<MyDrawer> {
             onTap: ()
             {
               fAuth.signOut();
-              Navigator.push(context, MaterialPageRoute(builder: (c)=> MySplashScreen()));
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> ToggleScreenPage()),(Route<dynamic> route) => false);
             },
             child: const ListTile(
               leading: Icon(Icons.logout,color: Colors.grey,),

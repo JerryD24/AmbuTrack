@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 import 'package:patient/authority/lib/mainScreens/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +19,17 @@ class _AuthoritySplashScreenState extends State<AuthoritySplashScreen>
 {
   startTimer()
   {
-    Timer(const Duration(microseconds: 0), () async
+    Timer(const Duration(seconds: 2), () async
     {
 
       if(fAuth.currentUser != null)
-        {
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> MainScreen()));
-        }
+      {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> MainScreen()),(Route<dynamic> route) => false);
+      }
       else
-        {
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> LoginScreen()),(Route<dynamic> route) => false);
-        }
+      {
+        Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+      }
 
     });
   }

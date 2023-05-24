@@ -18,17 +18,17 @@ class _DriverSplashScreenState extends State<DriverSplashScreen>
 {
   startTimer()
   {
-    Timer(const Duration(seconds: 1), () async
+    Timer(const Duration(seconds: 2), () async
     {
       // print(fAuth.currentUser.toString());
       if(fAuth.currentUser != null)
-        {
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const MainScreen()),(Route<dynamic> route) => false);
-        }
+      {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const MainScreen()),(Route<dynamic> route) => false);
+      }
       else
-        {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
-        }
+      {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+      }
 
     });
   }
@@ -37,14 +37,12 @@ class _DriverSplashScreenState extends State<DriverSplashScreen>
   void initState() 
   {
     super.initState();
-     
     startTimer();
   }
   
   @override
   Widget build(BuildContext context) 
   {
-    
     return Material(
       child: Container(
         color: Colors.white,

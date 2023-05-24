@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:patient/authority/lib/mainScreens/profile_tab.dart';
 import 'package:flutter/material.dart';
+import '../../../mainScreens/toggle_screen.dart';
 import 'home_tab.dart';
 
 class MainScreen extends StatefulWidget {
@@ -33,40 +36,50 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-    
-    
-        body: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: tabController,
-          children:  [
-            HomeTabScreen(),
-            ProfileTabPage(),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const [
-    
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Home",
-            ),
-    
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: "Profile",
-            ),
-    
-          ],
-          unselectedItemColor: Colors.white24,
-          selectedItemColor: Colors.white,
-          backgroundColor: Colors.blue,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: const TextStyle(fontSize: 14),
-          showUnselectedLabels: true,
-          currentIndex: selectedIndex,
-          onTap: onItemClicked,
+    var count = 0;
+    return WillPopScope(
+      onWillPop: ()async {
+        if(count==1){
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  ToggleScreenPage()),(Route<dynamic> route) => false);
+        }
+        count++;
+        return false;
+      },
+      child: SafeArea(
+        child: Scaffold(
+      
+      
+          body: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: tabController,
+            children:  [
+              HomeTabScreen(),
+              ProfileTabPage(),
+            ],
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const [
+      
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: "Home",
+              ),
+      
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: "Profile",
+              ),
+      
+            ],
+            unselectedItemColor: Colors.white24,
+            selectedItemColor: Colors.white,
+            backgroundColor: Colors.blue,
+            type: BottomNavigationBarType.fixed,
+            selectedLabelStyle: const TextStyle(fontSize: 14),
+            showUnselectedLabels: true,
+            currentIndex: selectedIndex,
+            onTap: onItemClicked,
+          ),
         ),
       ),
     );

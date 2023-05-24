@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings, avoid_print
+
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -52,8 +54,6 @@ class MapRouteScreenState extends State<MapRouteScreen> {
     } else if (permission == LocationPermission.deniedForever) {
       throw 'Location permissions are permanently denied';
     }
-
-    // Get the current location
     return Geolocator.getCurrentPosition();
   }
   void getRealTimeLocationUpdate()  {

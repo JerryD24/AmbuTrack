@@ -41,7 +41,7 @@ class AssistantMethods
     return humanReadableAddress;
   }
 
-  static void readCurrentOnlineUserInfo() async
+  static readCurrentOnlineUserInfo() async
   {
     currentFirebaseUser = fAuth.currentUser;
     DatabaseReference userRef = FirebaseDatabase.instance
@@ -49,13 +49,12 @@ class AssistantMethods
         .child("Patients")
         .child(currentFirebaseUser!.uid);
 
-    userRef.once().then((snap)
-    {
+    DatabaseEvent snap = await userRef.once();
       if(snap.snapshot.value != null)
-        {
-          userModelCurrentInfo = UserModel.fromSnapshot(snap.snapshot);
-        }
-    });
+      {
+        return userModelCurrentInfo = UserModel.fromSnapshot(snap.snapshot);
+      }
+      return null;
   }
 
   static Future<DirectionDetailsInfo?> obtainOriginToDestinationDirectionDetails(LatLng originPosition, LatLng destinationPosition) async
