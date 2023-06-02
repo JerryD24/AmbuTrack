@@ -41,6 +41,7 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(toggleIndex.toString()+"--------------------------------------------");
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -51,7 +52,7 @@ class _ToggleScreenPageState extends State<ToggleScreenPage> {
               // minWidth: MediaQuery.of(context).size.width/3,
               minHeight: 70.0,
               minWidth: 90,
-              // initialLabelIndex: 0,
+              initialLabelIndex: toggleIndex,
               cornerRadius: 20.0,
               activeFgColor: Colors.white,
               inactiveBgColor: Colors.grey,
