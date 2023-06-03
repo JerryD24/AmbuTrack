@@ -1150,8 +1150,9 @@ class _MainScreenState extends State<MainScreen>
     setState(() {
       markersSet.clear();
       circleSet.clear();
+   
 
-      Set<Marker> driversMarkerSet = <Marker>{};
+      // Set<Marker> driversMarkerSet = <Marker>{};
 
       for(ActiveNearbyAvailableAmbulanceDrivers eachDriver in GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList)
         {
@@ -1164,13 +1165,12 @@ class _MainScreenState extends State<MainScreen>
             rotation: 360,
           );
 
-          driversMarkerSet.add(marker);
+          markersSet.add(marker);
         }
+        // print(markersSet.toString()+"-----------------------------------------------------");
 
-      setState(() {
-        markersSet = driversMarkerSet;
       });
-    });
+    
   }
 
   createActiveNearbyAmbulanceDriverIconMarker()

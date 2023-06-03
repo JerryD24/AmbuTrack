@@ -61,7 +61,7 @@ class _HomeTabPageState extends State<HomeTabPage>
     newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
     String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(driverCurrentPosition!, context);
-    print("This is your address = $humanReadableAddress");
+    // print("This is your address = $humanReadableAddress");
 
 
   }
@@ -231,19 +231,21 @@ class _HomeTabPageState extends State<HomeTabPage>
 
   updateDriversLocationAtRealTime()
   {
-    streamSubscriptionPosition = Geolocator.getPositionStream()
-        .listen((Position position)
+    streamSubscriptionPosition = Geolocator.getPositionStream().listen((Position position)
     {
        driverCurrentPosition = position;
 
        if(isDriverActive == true && fAuth.currentUser!=null)
-         {
-           Geofire.setLocation(
-               currentFirebaseUser!.uid,
-               driverCurrentPosition!.latitude,
-               driverCurrentPosition!.longitude
-           );
-         }
+        {
+          Geofire.setLocation(
+              currentFirebaseUser!.uid,
+              driverCurrentPosition!.latitude,
+              driverCurrentPosition!.longitude
+          );
+        }
+        else {
+         isDriverActive = false;
+       }
        LatLng latLng = LatLng(
            driverCurrentPosition!.latitude,
            driverCurrentPosition!.longitude,
