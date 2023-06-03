@@ -23,20 +23,18 @@ import '../global/global.dart';
 import '../infoHandler/app_info.dart';
 import '../widgets/my_drawer.dart';
 
-class MainScreen extends StatefulWidget   //Patient Main Screen
+class MainScreen extends StatefulWidget //Patient Main Screen
 {
   const MainScreen({super.key});
-
-
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen>
-{
-  final Completer<GoogleMapController> _controllerGoogleMap = Completer<GoogleMapController>();
-  GoogleMapController? newGoogleMapController ;
+class _MainScreenState extends State<MainScreen> {
+  final Completer<GoogleMapController> _controllerGoogleMap =
+      Completer<GoogleMapController>();
+  GoogleMapController? newGoogleMapController;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(17.3850, 78.4867),
@@ -45,9 +43,9 @@ class _MainScreenState extends State<MainScreen>
 
   GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
 
-  double searchLocationContainerHeight =220.0;
-  double waitingResponseFromDriverContainerHeight =0;
-  double assignedDriverInfoContainerHeight =0;
+  double searchLocationContainerHeight = 220.0;
+  double waitingResponseFromDriverContainerHeight = 0;
+  double assignedDriverInfoContainerHeight = 0;
 
   Position? patientCurrentPosition;
   var geoLocator = Geolocator();
@@ -55,13 +53,13 @@ class _MainScreenState extends State<MainScreen>
   LocationPermission? _locationPermission;
 
   List<LatLng> pLinesCoOrdinatesList = [];
-  Set<Polyline> polyLineSet ={};
+  Set<Polyline> polyLineSet = {};
 
   Set<Marker> markersSet = {};
   Set<Circle> circleSet = {};
 
   String patientName = "Your Name";
-  String patientEmail ="Your Email";
+  String patientEmail = "Your Email";
 
   bool openNavigationDrawer = true;
 
@@ -69,11 +67,10 @@ class _MainScreenState extends State<MainScreen>
 
   BitmapDescriptor? activeNearbyIcon;
 
+  List<ActiveNearbyAvailableAmbulanceDrivers>
+      onlineNearbyAvailableAmbulanceDriversList = [];
 
-  List<ActiveNearbyAvailableAmbulanceDrivers> onlineNearbyAvailableAmbulanceDriversList = [];
-
-
-  DatabaseReference?  referenceAmbulanceRequest;
+  DatabaseReference? referenceAmbulanceRequest;
   String ambulanceDriverRideStatus = "Ambulance is on its way.";
   StreamSubscription<DatabaseEvent>? ambulanceCallRequestStreamSubscription;
   String patientRideRequestStatus = "";
@@ -81,11 +78,11 @@ class _MainScreenState extends State<MainScreen>
 
   //for Authority/////////////////////////////
 
-  DatabaseReference?  referenceDriverAcceptRequest;
+  DatabaseReference? referenceDriverAcceptRequest;
 
   /////////////////////////////////
 
-  blackThemedGoogleMap()    //uncomment for black theme of google map
+  blackThemedGoogleMap() //uncomment for black theme of google map
   {
     newGoogleMapController!.setMapStyle('''
                     [
@@ -215,282 +212,279 @@ class _MainScreenState extends State<MainScreen>
                    ''');
   }
 
-  checkIfLocationPermissionAllowed()
-  async {
+  checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
 
-    if(_locationPermission == LocationPermission.denied)
-      {
-        _locationPermission = await Geolocator.requestPermission();
-      }
+    if (_locationPermission == LocationPermission.denied) {
+      _locationPermission = await Geolocator.requestPermission();
+    }
   }
 
-  locateUserPosition() async
-  {
-    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  locateUserPosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     patientCurrentPosition = cPosition;
 
-    LatLng latLngPosition = LatLng(patientCurrentPosition!.latitude, patientCurrentPosition!.longitude);
+    LatLng latLngPosition = LatLng(
+        patientCurrentPosition!.latitude, patientCurrentPosition!.longitude);
 
-    CameraPosition cameraPosition = CameraPosition(target: latLngPosition,zoom: 14);
+    CameraPosition cameraPosition =
+        CameraPosition(target: latLngPosition, zoom: 14);
 
-    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(patientCurrentPosition!, context);
+    String humanReadableAddress =
+        await AssistantMethods.searchAddressForGeographicCoOrdinates(
+            patientCurrentPosition!, context);
     print("This is your address = $humanReadableAddress");
 
     patientName = userModelCurrentInfo!.name!;
-    patientEmail = userModelCurrentInfo!.email! ;
+    patientEmail = userModelCurrentInfo!.email!;
 
     initializeGeoFireListener();
   }
 
-  saveRideRequestInformation() async
-  {
+  saveRideRequestInformation() async {
     //1. save the ride request information
-    referenceAmbulanceRequest = FirebaseDatabase.instance.ref().child("Ambulance Request").push();
+    referenceAmbulanceRequest =
+        FirebaseDatabase.instance.ref().child("Ambulance Request").push();
 
-    var originLocation = Provider.of<AppInfo>(context,listen: false).patientPickUpLocation;
-   
-    Map originLocationMap =
-    {
+    var originLocation =
+        Provider.of<AppInfo>(context, listen: false).patientPickUpLocation;
+
+    Map originLocationMap = {
       "latitude": originLocation!.locationLatitude.toString(),
       "longitude": originLocation.locationLongitude.toString(),
     };
 
-  // Map destinationLocationMap =
-  //   {
-  //   //Key : value,
+    // Map destinationLocationMap =
+    //   {
+    //   //Key : value,
 
-  //   "latitude": destinationLocation!.locationLatitude.toString(),
-  //   "longitude": destinationLocation.locationLongitude.toString(),
-  //   };
+    //   "latitude": destinationLocation!.locationLatitude.toString(),
+    //   "longitude": destinationLocation.locationLongitude.toString(),
+    //   };
 
-  Map patientInformationMap =
-  {
-    "origin": originLocationMap,
-    // "destination" : destinationLocationMap,
-    "time" : DateTime.now().toString(),
-    "userName" : userModelCurrentInfo!.name,
-    "userPhone" : userModelCurrentInfo!.phone,
-    "originAddress" : originLocation.locationName,
-    // "destinationAddress" : destinationLocation.locationName,
-    "driverId" : "waiting",
-  };
+    Map patientInformationMap = {
+      "origin": originLocationMap,
+      // "destination" : destinationLocationMap,
+      "time": DateTime.now().toString(),
+      "userName": userModelCurrentInfo!.name,
+      "userPhone": userModelCurrentInfo!.phone,
+      "originAddress": originLocation.locationName,
+      // "destinationAddress" : destinationLocation.locationName,
+      "driverId": "waiting",
+    };
 
-  referenceAmbulanceRequest!.set(patientInformationMap);
-   onlineNearbyAvailableAmbulanceDriversList = GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList;
+    referenceAmbulanceRequest!.set(patientInformationMap);
+    onlineNearbyAvailableAmbulanceDriversList =
+        GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList;
     await searchNearestOnlineDrivers();
 
-  ///////////////////////////////////////////////////Authority//////////////////////////////////////////////////
-
-
+    ///////////////////////////////////////////////////Authority//////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    ambulanceCallRequestStreamSubscription = referenceAmbulanceRequest!.onValue.listen((eventSnap)
-    {
-      if(eventSnap.snapshot.value == null || (eventSnap.snapshot.value as Map)["driverId"]=="waiting" )
-      {
-          return;
+    ambulanceCallRequestStreamSubscription =
+        referenceAmbulanceRequest!.onValue.listen((eventSnap) {
+      if (eventSnap.snapshot.value == null ||
+          (eventSnap.snapshot.value as Map)["driverId"] == "waiting") {
+        return;
       }
       print("${eventSnap.snapshot.value}-----------------------------------");
-      if((eventSnap.snapshot.value as Map)["driverId"]["driverName"] != null)
-      {
+      if ((eventSnap.snapshot.value as Map)["driverId"]["driverName"] != null) {
         setState(() {
-          driverName = (eventSnap.snapshot.value as Map)["driverId"]["driverName"].toString();
+          driverName = (eventSnap.snapshot.value as Map)["driverId"]
+                  ["driverName"]
+              .toString();
         });
       }
 
-      if((eventSnap.snapshot.value as Map)["driverId"]["driverPhone"] != null)
-      {
+      if ((eventSnap.snapshot.value as Map)["driverId"]["driverPhone"] !=
+          null) {
         setState(() {
-          driverPhone = (eventSnap.snapshot.value as Map)["driverId"]["driverPhone"].toString();
+          driverPhone = (eventSnap.snapshot.value as Map)["driverId"]
+                  ["driverPhone"]
+              .toString();
         });
       }
 
-      if((eventSnap.snapshot.value as Map)["status"] != null)
-        {
-          patientRideRequestStatus = (eventSnap.snapshot.value as Map)["status"].toString();
+      if ((eventSnap.snapshot.value as Map)["status"] != null) {
+        patientRideRequestStatus =
+            (eventSnap.snapshot.value as Map)["status"].toString();
+      }
+
+      if ((eventSnap.snapshot.value as Map)["DriverLocation"] != null) {
+        double driverCurrentPositionLat = double.parse(
+            (eventSnap.snapshot.value as Map)["DriverLocation"]["latitude"]
+                .toString());
+        double driverCurrentPositionLng = double.parse(
+            (eventSnap.snapshot.value as Map)["DriverLocation"]["longitude"]
+                .toString());
+
+        LatLng driverCurrentPositionLatLng =
+            LatLng(driverCurrentPositionLat, driverCurrentPositionLng);
+
+        //status == accepted
+        if (patientRideRequestStatus == "accepted") {
+          updateArrivalTimeToPatientPickUpLocation(driverCurrentPositionLatLng);
+          referenceDriverAcceptRequest!.set(patientInformationMap);
         }
 
-      if((eventSnap.snapshot.value as Map)["DriverLocation"] != null)
-      {
-       double driverCurrentPositionLat =  double.parse((eventSnap.snapshot.value as Map)["DriverLocation"]["latitude"].toString());
-       double driverCurrentPositionLng =  double.parse((eventSnap.snapshot.value as Map)["DriverLocation"]["longitude"].toString());
-
-       LatLng driverCurrentPositionLatLng = LatLng(driverCurrentPositionLat, driverCurrentPositionLng);
-
-       //status == accepted
-        if(patientRideRequestStatus =="accepted")
-          {
-            updateArrivalTimeToPatientPickUpLocation(driverCurrentPositionLatLng);
-            referenceDriverAcceptRequest!.set(patientInformationMap);
-          }
-
         //status == onitsway
-       if(patientRideRequestStatus =="arrived")
-       {
+        if (patientRideRequestStatus == "arrived") {
           setState(() {
             ambulanceDriverRideStatus = "Ambulance is Arrived.";
           });
-       }
+        }
 
         //status == start
-       if(patientRideRequestStatus =="Way To Hospital")
-       {
-         updateReachingTimeToPatientDropOffLocation(driverCurrentPositionLatLng);
-       }
-
+        if (patientRideRequestStatus == "Way To Hospital") {
+          updateReachingTimeToPatientDropOffLocation(
+              driverCurrentPositionLatLng);
+        }
       }
     });
-
-
   }
 
-  updateArrivalTimeToPatientPickUpLocation(driverCurrentPositionLatLng) async
-  {
-
-   if(requestPositionInfo == true)
-     {
-       requestPositionInfo = false;
-
-       LatLng patientPickUpPosition = LatLng(patientCurrentPosition!.latitude, patientCurrentPosition!.longitude) ;
-
-       var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-         driverCurrentPositionLatLng,
-         patientPickUpPosition
-       );
-
-       if(directionDetailsInfo == null)
-         {
-           return;
-         }
-
-       setState(() {
-          ambulanceDriverRideStatus ="Ambulance will reach to you in ${directionDetailsInfo.duration_text}";
-       });
-       requestPositionInfo = true;
-     }
-  }
-
-  updateReachingTimeToPatientDropOffLocation(driverCurrentPositionLatLng) async
-  {
-
-    if(requestPositionInfo == true)
-    {
+  updateArrivalTimeToPatientPickUpLocation(driverCurrentPositionLatLng) async {
+    if (requestPositionInfo == true) {
       requestPositionInfo = false;
 
-      var dropOffLocation = Provider.of<AppInfo>(context, listen:  false).patientDropOffLocation;
+      LatLng patientPickUpPosition = LatLng(
+          patientCurrentPosition!.latitude, patientCurrentPosition!.longitude);
 
-      LatLng patientDestinationPosition = LatLng(
-          dropOffLocation!.locationLatitude!,
-          dropOffLocation.locationLongitude!
-      );
+      var directionDetailsInfo =
+          await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+              driverCurrentPositionLatLng, patientPickUpPosition);
 
-      var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-          driverCurrentPositionLatLng,
-          patientDestinationPosition,
-      );
-
-      if(directionDetailsInfo == null)
-      {
+      if (directionDetailsInfo == null) {
         return;
       }
 
       setState(() {
-        ambulanceDriverRideStatus ="Will reach Hospital in  ${directionDetailsInfo.duration_text}";
+        ambulanceDriverRideStatus =
+            "Ambulance will reach to you in ${directionDetailsInfo.duration_text}";
       });
       requestPositionInfo = true;
     }
   }
 
-  searchNearestOnlineDrivers() async
-  {
-    //when no active driver available
-    if(onlineNearbyAvailableAmbulanceDriversList.isEmpty)
-      {
-        //Cancel the ride request
+  updateReachingTimeToPatientDropOffLocation(
+      driverCurrentPositionLatLng) async {
+    if (requestPositionInfo == true) {
+      requestPositionInfo = false;
 
-        referenceAmbulanceRequest!.remove();
+      var dropOffLocation =
+          Provider.of<AppInfo>(context, listen: false).patientDropOffLocation;
 
-        setState(() {
-          polyLineSet.clear();
-          markersSet.clear();
-          circleSet.clear();
-          pLinesCoOrdinatesList.clear();
-        });
+      LatLng patientDestinationPosition = LatLng(
+          dropOffLocation!.locationLatitude!,
+          dropOffLocation.locationLongitude!);
 
-        Fluttertoast.showToast(msg: "No Ambulance near by.");
+      var directionDetailsInfo =
+          await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+        driverCurrentPositionLatLng,
+        patientDestinationPosition,
+      );
 
-        // Future.delayed(const Duration(milliseconds: 3000),()
-        // {
-        //   SystemNavigator.pop();
-        // });
-
+      if (directionDetailsInfo == null) {
         return;
       }
 
-    //active driver available
-    await retrieveOnlineAmbulanceDriverInformation(onlineNearbyAvailableAmbulanceDriversList);
-
-    var response = await Navigator.push(context, MaterialPageRoute(builder: (c)=> SelectNearestActiveAmbulanceDriversScreen(referenceAmbulanceRequest: referenceAmbulanceRequest)));
-  
-    if(response == "driverChosen")
-      {
-        FirebaseDatabase.instance.ref()
-            .child("Drivers")
-            .child(chosenDriverId!)
-            .once()
-            .then((snap)
-        {
-          if(snap.snapshot.value != null)
-            {
-              //sent notification to that specific Driver
-              sendNotificationToDriverNow(chosenDriverId!);
-
-              //display waiting Response ui from driver
-
-              showWaitingResponseFromDriverUI();
-
-                              //Response from driver
-
-              FirebaseDatabase.instance.ref()
-                  .child("Drivers")
-                  .child(chosenDriverId!)
-                  .child("newRideStatus")
-                  .onValue.listen((eventSnapshot)
-              {
-                //1.Cancel the Ride Request :: Push Notification
-                //(newRiseStatus = idle)
-
-                if(eventSnapshot.snapshot.value == "idle")
-                  {
-                    Fluttertoast.showToast(msg: "Driver has cancelled your Request. Please choose another Driver.");
-
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=>  const MainScreen()));
-                  }
-
-
-                //2.Accept the Ride Request :: Push Notification
-                //(newRiseStatus = accepted)
-                if(eventSnapshot.snapshot.value == "accepted")
-                {
-                  showUIForAssignedDriverInfo();
-                }
-              });
-            }
-          else
-            {
-              Fluttertoast.showToast(msg: "This Driver do not exist.");
-            }
-        });
-      }
+      setState(() {
+        ambulanceDriverRideStatus =
+            "Will reach Hospital in  ${directionDetailsInfo.duration_text}";
+      });
+      requestPositionInfo = true;
+    }
   }
 
-  showUIForAssignedDriverInfo()
-  {
+  searchNearestOnlineDrivers() async {
+    //when no active driver available
+    if (onlineNearbyAvailableAmbulanceDriversList.isEmpty) {
+      //Cancel the ride request
+
+      referenceAmbulanceRequest!.remove();
+
+      setState(() {
+        polyLineSet.clear();
+        markersSet.clear();
+        circleSet.clear();
+        pLinesCoOrdinatesList.clear();
+      });
+
+      Fluttertoast.showToast(msg: "No Ambulance near by.");
+
+      // Future.delayed(const Duration(milliseconds: 3000),()
+      // {
+      //   SystemNavigator.pop();
+      // });
+
+      return;
+    }
+
+    //active driver available
+    await retrieveOnlineAmbulanceDriverInformation(
+        onlineNearbyAvailableAmbulanceDriversList);
+
+    var response = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (c) => SelectNearestActiveAmbulanceDriversScreen(
+                referenceAmbulanceRequest: referenceAmbulanceRequest)));
+
+    if (response == "driverChosen") {
+      FirebaseDatabase.instance
+          .ref()
+          .child("Drivers")
+          .child(chosenDriverId!)
+          .once()
+          .then((snap) {
+        if (snap.snapshot.value != null) {
+          //sent notification to that specific Driver
+          sendNotificationToDriverNow(chosenDriverId!);
+
+          //display waiting Response ui from driver
+
+          showWaitingResponseFromDriverUI();
+
+          //Response from driver
+
+          FirebaseDatabase.instance
+              .ref()
+              .child("Drivers")
+              .child(chosenDriverId!)
+              .child("newRideStatus")
+              .onValue
+              .listen((eventSnapshot) {
+            //1.Cancel the Ride Request :: Push Notification
+            //(newRiseStatus = idle)
+
+            if (eventSnapshot.snapshot.value == "idle") {
+              Fluttertoast.showToast(
+                  msg:
+                      "Driver has cancelled your Request. Please choose another Driver.");
+
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (c) => const MainScreen()));
+            }
+
+            //2.Accept the Ride Request :: Push Notification
+            //(newRiseStatus = accepted)
+            if (eventSnapshot.snapshot.value == "accepted") {
+              showUIForAssignedDriverInfo();
+            }
+          });
+        } else {
+          Fluttertoast.showToast(msg: "This Driver do not exist.");
+        }
+      });
+    }
+  }
+
+  showUIForAssignedDriverInfo() {
     setState(() {
       searchLocationContainerHeight = 0;
       waitingResponseFromDriverContainerHeight = 0;
@@ -498,72 +492,63 @@ class _MainScreenState extends State<MainScreen>
     });
   }
 
-  showWaitingResponseFromDriverUI()
-  {
+  showWaitingResponseFromDriverUI() {
     setState(() {
       searchLocationContainerHeight = 0;
       waitingResponseFromDriverContainerHeight = 220;
-
     });
   }
 
-  sendNotificationToDriverNow(String chosenDriverId)
-  {
+  sendNotificationToDriverNow(String chosenDriverId) {
     //assign riderequest to newRideStatus in drivers parent node for that specific chosen Driver
-    FirebaseDatabase.instance.ref()
+    FirebaseDatabase.instance
+        .ref()
         .child("Drivers")
         .child(chosenDriverId)
         .child("newRideStatus")
         .set(referenceAmbulanceRequest?.key);
-    
-    
+
     //Automate the push notification
-    FirebaseDatabase.instance.ref()
+    FirebaseDatabase.instance
+        .ref()
         .child("Drivers")
         .child(chosenDriverId)
-        .child("token").once().then((snap)
-    {
-      if(snap.snapshot.value != null)
-        {
-          String deviceRegistrationToken = snap.snapshot.value.toString();
+        .child("token")
+        .once()
+        .then((snap) {
+      if (snap.snapshot.value != null) {
+        String deviceRegistrationToken = snap.snapshot.value.toString();
 
-          //send Notification
-          AssistantMethods.sendNotificationToDriverNow(
-              deviceRegistrationToken,
-              referenceAmbulanceRequest!.key.toString(),
-              context,
-          );
-          Fluttertoast.showToast(msg: "Notification Sent Successfully.");
-
-        }
-      else
-        {
-          Fluttertoast.showToast(msg: "Please select another Driver.");
-          return;
-        }
+        //send Notification
+        AssistantMethods.sendNotificationToDriverNow(
+          deviceRegistrationToken,
+          referenceAmbulanceRequest!.key.toString(),
+          context,
+        );
+        Fluttertoast.showToast(msg: "Notification Sent Successfully.");
+      } else {
+        Fluttertoast.showToast(msg: "Please select another Driver.");
+        return;
+      }
     });
-
   }
 
-  retrieveOnlineAmbulanceDriverInformation(List onlineNearestAmbulanceDriversList) async
-  {
-    dList.clear();
+  retrieveOnlineAmbulanceDriverInformation(
+      List onlineNearestAmbulanceDriversList) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref().child("Drivers");
-      for(int i=0;i<onlineNearestAmbulanceDriversList.length; i++)
-      {
-         await ref.child(onlineNearestAmbulanceDriversList[i].driverId.toString())
-            .once()
-            .then((dataSnapshot)
-        {
-          var driverKeyInfo =dataSnapshot.snapshot.value;
-          if(!dList.contains(driverKeyInfo)) {
-            dList.add(driverKeyInfo);
-            // print(dList.toString()+"=================================================dlist");
-          }
-
-        });
-      }
-
+    for (int i = 0; i < onlineNearestAmbulanceDriversList.length; i++) {
+      dList.clear();
+      await ref
+          .child(onlineNearestAmbulanceDriversList[i].driverId.toString())
+          .once()
+          .then((dataSnapshot) {
+        var driverKeyInfo = dataSnapshot.snapshot.value;
+        if (!dList.contains(driverKeyInfo)) {
+          dList.add(driverKeyInfo);
+          // print(dList.toString()+"=================================================dlist");
+        }
+      });
+    }
   }
 
   @override
@@ -578,9 +563,12 @@ class _MainScreenState extends State<MainScreen>
     createActiveNearbyAmbulanceDriverIconMarker();
     var count = 0;
     return WillPopScope(
-      onWillPop: ()async {
-        if(count==1){
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  ToggleScreenPage()),(Route<dynamic> route) => false);
+      onWillPop: () async {
+        if (count == 1) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (c) => ToggleScreenPage()),
+              (Route<dynamic> route) => false);
         }
         count++;
         return false;
@@ -588,7 +576,7 @@ class _MainScreenState extends State<MainScreen>
       child: SafeArea(
         child: Scaffold(
           key: sKey,
-          drawer : SizedBox(
+          drawer: SizedBox(
             width: 280,
             child: Theme(
               data: Theme.of(context).copyWith(
@@ -607,43 +595,50 @@ class _MainScreenState extends State<MainScreen>
                 myLocationEnabled: true,
                 zoomGesturesEnabled: true,
                 zoomControlsEnabled: true,
-                initialCameraPosition:Provider.of<AppInfo>(context).patientPickUpLocation==null? _kGooglePlex : CameraPosition(
-    target: LatLng(Provider.of<AppInfo>(context).patientPickUpLocation!.locationLatitude!, Provider.of<AppInfo>(context).patientPickUpLocation!.locationLongitude!),
-    zoom: 14.4746,
-  ) ,
+                initialCameraPosition:
+                    Provider.of<AppInfo>(context).patientPickUpLocation == null
+                        ? _kGooglePlex
+                        : CameraPosition(
+                            target: LatLng(
+                                Provider.of<AppInfo>(context)
+                                    .patientPickUpLocation!
+                                    .locationLatitude!,
+                                Provider.of<AppInfo>(context)
+                                    .patientPickUpLocation!
+                                    .locationLongitude!),
+                            zoom: 14.4746,
+                          ),
                 polylines: polyLineSet,
                 markers: markersSet,
                 circles: circleSet,
-                onMapCreated: (GoogleMapController controller)
-                {
+                onMapCreated: (GoogleMapController controller) {
                   _controllerGoogleMap.complete(controller);
                   newGoogleMapController = controller;
-      
+
                   // //for Black theme Google Map
                   // blackThemedGoogleMap();
-      
+
                   locateUserPosition();
                 },
               ),
-      
+
               //custom hamburger button for drawer
               Positioned(
                 top: 45,
                 left: 22,
                 child: GestureDetector(
-                  onTap: ()
-                  {
-                    if(openNavigationDrawer)
-                    {
+                  onTap: () {
+                    if (openNavigationDrawer) {
                       sKey.currentState!.openDrawer();
-                    }
-                    else
-                    {
+                    } else {
                       //restart or refresh app automatically, in order to refresh stats of the app
                       // SystemNavigator.pop();
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> const ToggleScreenPage()),(Route<dynamic> route) => false);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (c) => const ToggleScreenPage()),
+                          (Route<dynamic> route) => false);
                     }
-      
                   },
                   child: CircleAvatar(
                     backgroundColor: Colors.grey,
@@ -654,7 +649,7 @@ class _MainScreenState extends State<MainScreen>
                   ),
                 ),
               ),
-      
+
               //ui for searching location
               Positioned(
                 bottom: 0,
@@ -666,78 +661,97 @@ class _MainScreenState extends State<MainScreen>
                   child: Container(
                     // height: searchLocationContainerHeight,
                     decoration: const BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        topLeft: Radius.circular(20),
-                      )
-                    ),
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          topLeft: Radius.circular(20),
+                        )),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 18),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 18),
                       child: Column(
                         children: [
                           //from (current location)
                           InkWell(
-                            onTap: (){setState(() {
-                              
-                            });},
-                            child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5,),
-                            child: 
-                            Row(
-                              children: [
-                                const Icon(Icons.add_location_alt_outlined,color: Colors.grey,),
-                                const SizedBox(width: 12.0,),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            onTap: () {
+                              setState(() {});
+                            },
+                            child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 5,
+                                  bottom: 5,
+                                ),
+                                child: Row(
                                   children: [
-                                    const Text(
-                                      "Current Address",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey,fontSize: 16,),
+                                    const Icon(
+                                      Icons.add_location_alt_outlined,
+                                      color: Colors.grey,
                                     ),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width*3/4,
-                                      child: Text(
-                                        Provider.of<AppInfo>(context).patientPickUpLocation != null
-                                            ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!)}"
-                                            : "Obtaining address",
-                                        style: const TextStyle(
-                                          color: Colors.grey,fontSize: 16,),
-                                      ),
+                                    const SizedBox(
+                                      width: 12.0,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "Current Address",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              3 /
+                                              4,
+                                          child: Text(
+                                            Provider.of<AppInfo>(context)
+                                                        .patientPickUpLocation !=
+                                                    null
+                                                ? "${(Provider.of<AppInfo>(context).patientPickUpLocation!.locationName!)}"
+                                                : "Obtaining address",
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                                ),
-                              ],
-                            )),
+                                )),
                           ),
-      
+
                           // const SizedBox(height: 10,),
-      
+
                           // const Divider(
                           //   height: 1,
                           //     thickness: 1,
                           //     color: Colors.grey,
                           // ),
-      
+
                           // const SizedBox(height: 16.0,),
-      
+
                           //to
                           // InkWell(
                           //   onTap: () async
                           //   {
                           //     //go to search places screen
                           //     var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=>const SearchPlacesScreen()));
-      
+
                           //     if(responseFromSearchScreen == "obtainedDropoff")
                           //       {
                           //         setState(() {
                           //           openNavigationDrawer = false;
                           //         });
-      
+
                           //         //draw routes- draw poly line
                           //         await drawPolyLineFromOriginToDestination();
-      
+
                           //       }
                           //   },
                           //   child: Padding(padding: const EdgeInsets.only(top: 5,bottom: 5) , child:  Row(
@@ -767,42 +781,43 @@ class _MainScreenState extends State<MainScreen>
                           //     ],
                           //   )),
                           // ),
-      
+
                           // const SizedBox(height: 10,),
-      
+
                           const Divider(
                             height: 1,
                             thickness: 1,
                             color: Colors.grey,
                           ),
-      
-                          const SizedBox(height: 16.0,),
-      
+
+                          const SizedBox(
+                            height: 16.0,
+                          ),
+
                           ElevatedButton(
-                            onPressed: ()
-                            {
-                                saveRideRequestInformation();
+                            onPressed: () {
+                              saveRideRequestInformation();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
-                              textStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                              textStyle: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             child: const Text(
                               "Request Ambulance",
                             ),
                           ),
-      
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
-      
+
               //ui for waiting response from driver
               Positioned(
                 bottom: 0,
-                left:0,
+                left: 0,
                 right: 0,
                 child: Container(
                   height: waitingResponseFromDriverContainerHeight,
@@ -811,8 +826,7 @@ class _MainScreenState extends State<MainScreen>
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
                         topLeft: Radius.circular(20),
-                      )
-                  ),
+                      )),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Center(
@@ -822,13 +836,19 @@ class _MainScreenState extends State<MainScreen>
                             'Waiting for response from Driver...',
                             textAlign: TextAlign.center,
                             duration: const Duration(milliseconds: 5000),
-                            textStyle: const TextStyle(fontSize: 20.0,color: Colors.lightBlue, fontWeight: FontWeight.bold),
+                            textStyle: const TextStyle(
+                                fontSize: 20.0,
+                                color: Colors.lightBlue,
+                                fontWeight: FontWeight.bold),
                           ),
                           ScaleAnimatedText(
                             'Please Wait...',
                             textAlign: TextAlign.center,
                             duration: const Duration(milliseconds: 4000),
-                            textStyle: const TextStyle(fontSize: 25.0,color: Colors.lightBlue, fontFamily: 'Canterbury'),
+                            textStyle: const TextStyle(
+                                fontSize: 25.0,
+                                color: Colors.lightBlue,
+                                fontFamily: 'Canterbury'),
                           ),
                         ],
                       ),
@@ -836,11 +856,11 @@ class _MainScreenState extends State<MainScreen>
                   ),
                 ),
               ),
-      
+
               //ui for displaying assigned driver information
               Positioned(
                 bottom: 0,
-                left:0,
+                left: 0,
                 right: 0,
                 child: Container(
                   height: assignedDriverInfoContainerHeight,
@@ -849,10 +869,10 @@ class _MainScreenState extends State<MainScreen>
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
                         topLeft: Radius.circular(20),
-                      )
-                  ),
+                      )),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -867,18 +887,22 @@ class _MainScreenState extends State<MainScreen>
                             ),
                           ),
                         ),
-      
-                        const SizedBox(height: 20.0,),
-      
+
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+
                         const Divider(
                           height: 2,
                           thickness: 2,
                           color: Colors.white60,
                         ),
-      
-                        const SizedBox(height: 20.0,),
+
+                        const SizedBox(
+                          height: 20.0,
+                        ),
                         //driver name
-      
+
                         Center(
                           child: Text(
                             driverName,
@@ -890,9 +914,11 @@ class _MainScreenState extends State<MainScreen>
                             ),
                           ),
                         ),
-      
-                        const SizedBox(height: 2.0,),
-      
+
+                        const SizedBox(
+                          height: 2.0,
+                        ),
+
                         //Driver Vehicle Detail
                         Center(
                           child: Text(
@@ -904,66 +930,68 @@ class _MainScreenState extends State<MainScreen>
                             ),
                           ),
                         ),
-      
-      
-      
-                        const SizedBox(height: 20.0,),
-      
+
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+
                         const Divider(
                           height: 2,
                           thickness: 2,
                           color: Colors.white60,
                         ),
-      
-                        const SizedBox(height: 20.0,),
-      
+
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+
                         //call driver button
                         Center(
                           child: ElevatedButton.icon(
-                              onPressed: ()
-                              {
-                                launch("tel://"+driverPhone.toString());
-                              },
+                            onPressed: () {
+                              launch("tel://" + driverPhone.toString());
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                             ),
-      
-                              icon: const Icon(Icons.phone_android,
+                            icon: const Icon(
+                              Icons.phone_android,
                               color: Colors.black54,
-                                size: 22,
+                              size: 22,
+                            ),
+                            label: const Text(
+                              "Call Driver",
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold,
                               ),
-                              label: const Text(
-                                "Call Driver",
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.bold,
-      
-                                ),
-                              ),
+                            ),
                           ),
                         ),
-      
                       ],
                     ),
                   ),
-      
                 ),
               ),
-              Provider.of<AppInfo>(context).patientPickUpLocation == null?
-    
-              Container(
-                color: Color.fromARGB(134, 181, 181, 181),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text("Fetching Current Location",style: TextStyle(fontSize:20, fontWeight: FontWeight.bold),)
-                  ],
-                  ),
-                ),
-              ):Container()
+              Provider.of<AppInfo>(context).patientPickUpLocation == null
+                  ? Container(
+                      color: Color.fromARGB(134, 181, 181, 181),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text(
+                              "Fetching Current Location",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  : Container()
             ],
           ),
         ),
@@ -971,20 +999,27 @@ class _MainScreenState extends State<MainScreen>
     );
   }
 
-  Future<void> drawPolyLineFromOriginToDestination() async
-  {
-    var originPosition = Provider.of<AppInfo>(context, listen: false).patientPickUpLocation;
-    var destinationPosition = Provider.of<AppInfo>(context, listen: false).patientDropOffLocation;
+  Future<void> drawPolyLineFromOriginToDestination() async {
+    var originPosition =
+        Provider.of<AppInfo>(context, listen: false).patientPickUpLocation;
+    var destinationPosition =
+        Provider.of<AppInfo>(context, listen: false).patientDropOffLocation;
 
-    var originLatLng =LatLng(originPosition!.locationLatitude!, originPosition.locationLongitude!);
-    var destinationLatLng =LatLng(destinationPosition!.locationLatitude!, destinationPosition.locationLongitude!);
+    var originLatLng = LatLng(
+        originPosition!.locationLatitude!, originPosition.locationLongitude!);
+    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!,
+        destinationPosition.locationLongitude!);
 
     showDialog(
-        context: context,
-        builder: (BuildContext context)=> ProgressDialog(message:"Please wait...",),
+      context: context,
+      builder: (BuildContext context) => ProgressDialog(
+        message: "Please wait...",
+      ),
     );
 
-    var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
+    var directionDetailsInfo =
+        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+            originLatLng, destinationLatLng);
 
     Navigator.pop(context);
 
@@ -992,21 +1027,22 @@ class _MainScreenState extends State<MainScreen>
     print(directionDetailsInfo!.e_points);
 
     PolylinePoints pPoints = PolylinePoints();
-    List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo.e_points!);
+    List<PointLatLng> decodedPolyLinePointsResultList =
+        pPoints.decodePolyline(directionDetailsInfo.e_points!);
 
     pLinesCoOrdinatesList.clear();
 
-    if(decodedPolyLinePointsResultList.isNotEmpty)
-      {
-        for (var pointLatLng in decodedPolyLinePointsResultList) {
-          pLinesCoOrdinatesList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-        }
+    if (decodedPolyLinePointsResultList.isNotEmpty) {
+      for (var pointLatLng in decodedPolyLinePointsResultList) {
+        pLinesCoOrdinatesList
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
       }
+    }
 
     polyLineSet.clear();
 
     setState(() {
-      Polyline polyLine =Polyline(
+      Polyline polyLine = Polyline(
         color: Colors.blueAccent,
         polylineId: const PolylineId("PolylineId"),
         jointType: JointType.round,
@@ -1020,43 +1056,40 @@ class _MainScreenState extends State<MainScreen>
     });
 
     LatLngBounds boundsLatlng;
-    if(originLatLng.latitude > destinationLatLng.latitude && originLatLng.longitude > destinationLatLng.longitude)
-      {
-        boundsLatlng = LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
-      }
-
-    else if(originLatLng.longitude > destinationLatLng.longitude)
-      {
-        boundsLatlng = LatLngBounds(
-            southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
-            northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
-        );
-      }
-
-    else if(originLatLng.latitude > destinationLatLng.latitude )
-    {
+    if (originLatLng.latitude > destinationLatLng.latitude &&
+        originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatlng =
+          LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
+    } else if (originLatLng.longitude > destinationLatLng.longitude) {
       boundsLatlng = LatLngBounds(
-          southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
-          northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+        southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+        northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
       );
+    } else if (originLatLng.latitude > destinationLatLng.latitude) {
+      boundsLatlng = LatLngBounds(
+        southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+        northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+      );
+    } else {
+      boundsLatlng =
+          LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
     }
-    else
-      {
-        boundsLatlng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
-      }
 
-    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatlng, 65));
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newLatLngBounds(boundsLatlng, 65));
 
     Marker originMarker = Marker(
       markerId: const MarkerId("originId"),
-      infoWindow: InfoWindow(title: originPosition.locationName,snippet: "Origin"),
+      infoWindow:
+          InfoWindow(title: originPosition.locationName, snippet: "Origin"),
       position: originLatLng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
     );
 
     Marker destinationMarker = Marker(
       markerId: const MarkerId("destinationId"),
-      infoWindow: InfoWindow(title: destinationPosition.locationName,snippet: "Destination"),
+      infoWindow: InfoWindow(
+          title: destinationPosition.locationName, snippet: "Destination"),
       position: destinationLatLng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     );
@@ -1093,8 +1126,8 @@ class _MainScreenState extends State<MainScreen>
   initializeGeoFireListener() {
     Geofire.initialize("activeDrivers");
 
-    Geofire.queryAtLocation(
-        patientCurrentPosition!.latitude, patientCurrentPosition!.longitude, 10000)!
+    Geofire.queryAtLocation(patientCurrentPosition!.latitude,
+            patientCurrentPosition!.longitude, 10000)!
         .listen((map) {
       // print(map);
       if (map != null) {
@@ -1106,15 +1139,19 @@ class _MainScreenState extends State<MainScreen>
         switch (callBack) {
           //whenever any driver become active- online
           case Geofire.onKeyEntered:
-            ActiveNearbyAvailableAmbulanceDrivers activeNearbyAvailableAmbulanceDriver = ActiveNearbyAvailableAmbulanceDrivers();
-            activeNearbyAvailableAmbulanceDriver.locationLatitude = map['latitude'];
-            activeNearbyAvailableAmbulanceDriver.locationLongitude = map['longitude'];
+            ActiveNearbyAvailableAmbulanceDrivers
+                activeNearbyAvailableAmbulanceDriver =
+                ActiveNearbyAvailableAmbulanceDrivers();
+            activeNearbyAvailableAmbulanceDriver.locationLatitude =
+                map['latitude'];
+            activeNearbyAvailableAmbulanceDriver.locationLongitude =
+                map['longitude'];
             activeNearbyAvailableAmbulanceDriver.driverId = map['key'];
-            GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList.add(activeNearbyAvailableAmbulanceDriver);
-            if(activeNearbyDriversKeysLoaded == true)
-              {
-                displayActiveDriversOnPatientMap();
-              }
+            GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList
+                .add(activeNearbyAvailableAmbulanceDriver);
+            if (activeNearbyDriversKeysLoaded == true) {
+              displayActiveDriversOnPatientMap();
+            }
             break;
 
           //whenever any driver become NonActive- offline
@@ -1125,11 +1162,16 @@ class _MainScreenState extends State<MainScreen>
 
           //whenever driver moves - update driver location
           case Geofire.onKeyMoved:
-            ActiveNearbyAvailableAmbulanceDrivers activeNearbyAvailableAmbulanceDriver = ActiveNearbyAvailableAmbulanceDrivers();
-            activeNearbyAvailableAmbulanceDriver.locationLatitude = map['latitude'];
-            activeNearbyAvailableAmbulanceDriver.locationLongitude = map['longitude'];
+            ActiveNearbyAvailableAmbulanceDrivers
+                activeNearbyAvailableAmbulanceDriver =
+                ActiveNearbyAvailableAmbulanceDrivers();
+            activeNearbyAvailableAmbulanceDriver.locationLatitude =
+                map['latitude'];
+            activeNearbyAvailableAmbulanceDriver.locationLongitude =
+                map['longitude'];
             activeNearbyAvailableAmbulanceDriver.driverId = map['key'];
-            GeoFireAssistant.updateActiveNearbyAvailableAmbulanceDriverLocation(activeNearbyAvailableAmbulanceDriver);
+            GeoFireAssistant.updateActiveNearbyAvailableAmbulanceDriverLocation(
+                activeNearbyAvailableAmbulanceDriver);
             displayActiveDriversOnPatientMap();
             break;
 
@@ -1145,27 +1187,27 @@ class _MainScreenState extends State<MainScreen>
     });
   }
 
-  displayActiveDriversOnPatientMap()
-  {
+  displayActiveDriversOnPatientMap() {
     setState(() {
       markersSet.clear();
       circleSet.clear();
 
       Set<Marker> driversMarkerSet = <Marker>{};
 
-      for(ActiveNearbyAvailableAmbulanceDrivers eachDriver in GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList)
-        {
-          LatLng eachDriverActivePosition = LatLng(eachDriver.locationLatitude!,eachDriver.locationLongitude!);
+      for (ActiveNearbyAvailableAmbulanceDrivers eachDriver
+          in GeoFireAssistant.activeNearbyAvailableAmbulanceDriversList) {
+        LatLng eachDriverActivePosition =
+            LatLng(eachDriver.locationLatitude!, eachDriver.locationLongitude!);
 
-          Marker marker = Marker(
-            markerId: MarkerId(eachDriver.driverId!),
-            position: eachDriverActivePosition,
-            icon: activeNearbyIcon!,
-            rotation: 360,
-          );
+        Marker marker = Marker(
+          markerId: MarkerId(eachDriver.driverId!),
+          position: eachDriverActivePosition,
+          icon: activeNearbyIcon!,
+          rotation: 360,
+        );
 
-          driversMarkerSet.add(marker);
-        }
+        driversMarkerSet.add(marker);
+      }
 
       setState(() {
         markersSet = driversMarkerSet;
@@ -1173,15 +1215,14 @@ class _MainScreenState extends State<MainScreen>
     });
   }
 
-  createActiveNearbyAmbulanceDriverIconMarker()
-  {
-    if(activeNearbyIcon == null)
-      {
-        ImageConfiguration imageConfiguration = createLocalImageConfiguration(context,size: const Size(1, 1));
-        BitmapDescriptor.fromAssetImage(imageConfiguration,"images/pin.png").then((value)
-        {
-          activeNearbyIcon = value;
-        });
-      }
+  createActiveNearbyAmbulanceDriverIconMarker() {
+    if (activeNearbyIcon == null) {
+      ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: const Size(1, 1));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/pin.png")
+          .then((value) {
+        activeNearbyIcon = value;
+      });
+    }
   }
 }
