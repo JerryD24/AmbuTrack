@@ -1,16 +1,15 @@
 
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:patient/authentication/signup_screen.dart';
-import 'package:patient/driver/lib/mainScreens/main_screen.dart';
 import 'package:patient/mainScreens/toggle_screen.dart';
 
 import '../global/global.dart';
-import '../splashScreen/splash_screen.dart';
+import '../mainScreens/main_screen.dart';
 import '../widgets/progress_dialog.dart';
 
 class LoginScreen extends StatefulWidget

@@ -236,7 +236,7 @@ class _HomeTabPageState extends State<HomeTabPage>
     {
        driverCurrentPosition = position;
 
-       if(isDriverActive == true)
+       if(isDriverActive == true && fAuth.currentUser!=null)
          {
            Geofire.setLocation(
                currentFirebaseUser!.uid,
