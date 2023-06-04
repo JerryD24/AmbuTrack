@@ -5,25 +5,22 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() async
-{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
-      MyApp(
+    MyApp(
         child: ChangeNotifierProvider(
-          create: (context) => AppInfo(),
-          child: MaterialApp(
-            title: 'AllInOne Ambulance',
-            theme: ThemeData(
-
-              primarySwatch: Colors.blue,
-            ),
-            home: const ToggleScreenPage(),
-            debugShowCheckedModeBanner: false,
-          ),
-        )
+      create: (context) => AppInfo(),
+      child: MaterialApp(
+        title: 'AmbuTrack',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const ToggleScreenPage(),
+        debugShowCheckedModeBanner: false,
       ),
+    )),
   );
 }
 
@@ -32,8 +29,7 @@ class MyApp extends StatefulWidget {
 
   MyApp({this.child});
 
-  static void restartApp(BuildContext context)
-  {
+  static void restartApp(BuildContext context) {
     context.findAncestorStateOfType<_MyAppState>()!.restartApp();
   }
 
@@ -41,11 +37,9 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp>
-{
-  Key key =UniqueKey();
-  void restartApp()
-  {
+class _MyAppState extends State<MyApp> {
+  Key key = UniqueKey();
+  void restartApp() {
     setState(() {
       key = UniqueKey();
     });
@@ -53,8 +47,6 @@ class _MyAppState extends State<MyApp>
 
   @override
   Widget build(BuildContext context) {
-    return KeyedSubtree(
-      key: key,
-        child: widget.child!);
+    return KeyedSubtree(key: key, child: widget.child!);
   }
 }
