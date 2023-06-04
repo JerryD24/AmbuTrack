@@ -8,6 +8,7 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../assistants/black_theme_google_map.dart';
@@ -118,14 +119,14 @@ class _HomeTabPageState extends State<HomeTabPage>
           {
             _controllerGoogleMap.complete(controller);
             newGoogleMapController =controller;
-
+    
             //for Black theme Google Map
             // blackThemedGoogleMap(newGoogleMapController);
-
+    
             locateDriverPosition();
           },
         ),
-
+    
         // ui for  online -offline drivers
         statusText != "Now Online"
             ? Container(
@@ -134,7 +135,7 @@ class _HomeTabPageState extends State<HomeTabPage>
           color: Colors.black87,
         )
             :Container(),
-
+    
         //button for online-offline
         Positioned(
             top: statusText != "Now Online"
@@ -152,13 +153,13 @@ class _HomeTabPageState extends State<HomeTabPage>
                       {
                       driverIsOnlineNow();
                       updateDriversLocationAtRealTime();
-
+    
                       setState(() {
                         statusText = "Now Online";
                         isDriverActive = true;
                         buttonColor = Colors.transparent;
                       });
-
+    
                       //display Toast
                       Fluttertoast.showToast(msg: "You are Online Now");
                     }
@@ -170,7 +171,7 @@ class _HomeTabPageState extends State<HomeTabPage>
                           isDriverActive = false;
                           buttonColor = Colors.grey;
                         });
-
+    
                         //display Toast
                         Fluttertoast.showToast(msg: "You are Offline Now");
                       }
@@ -182,7 +183,7 @@ class _HomeTabPageState extends State<HomeTabPage>
                     borderRadius: BorderRadius.circular(26),
                   ),
                 ),
-
+    
                   child: statusText != "Now Online"
                       ? Text(
                     statusText,
@@ -252,6 +253,8 @@ class _HomeTabPageState extends State<HomeTabPage>
        );
        newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
     });
+
+    // streamSubscriptionPosition?.cancel();
   }
 
   driverIsOfflineNow()

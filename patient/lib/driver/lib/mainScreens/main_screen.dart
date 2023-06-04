@@ -1,9 +1,13 @@
 
 // ignore_for_file: prefer_const_constructors
-
+import 'package:firebase_database/firebase_database.dart';
+import 'package:patient/authority/lib/global/global.dart';
+import 'package:patient/driver/lib/global/global.dart';
 import 'package:patient/driver/lib/tabPages/home_tab.dart';
 import 'package:patient/driver/lib/tabPages/profile_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
+
 
 import '../../../mainScreens/toggle_screen.dart';
 
@@ -41,6 +45,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     return WillPopScope(
       onWillPop: ()async {
         if(count==1){
+          await FirebaseDatabase.instance.ref("activeDrivers").remove();
+          streamSubscriptionPosition?.cancel();
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=>  ToggleScreenPage()),(Route<dynamic> route) => false);
         }
         count++;

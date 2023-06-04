@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:patient/driver/lib/global/global.dart';
 import 'package:flutter/material.dart';
 import 'package:patient/mainScreens/toggle_screen.dart';
@@ -13,6 +14,14 @@ class ProfileTabPage extends StatefulWidget {
 }
 
 class _ProfileTabPageState extends State<ProfileTabPage> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    FirebaseDatabase.instance.ref("activeDrivers").remove();
+    streamSubscriptionPosition?.cancel();
+  }
   @override
   Widget build(BuildContext context) {
     return Center(

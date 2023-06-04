@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:patient/assistants/assistant_methods.dart';
 import 'package:patient/authentication/signup_screen.dart';
 import 'package:patient/mainScreens/toggle_screen.dart';
 
@@ -74,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen>
         {
           currentFirebaseUser =firebaseUser;
           Fluttertoast.showToast(msg: "Login Successful.");
+          AssistantMethods.readCurrentOnlineUserInfo();
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c)=> MainScreen()),(Route<dynamic> route) => false);
         }
         else
