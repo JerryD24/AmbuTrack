@@ -287,7 +287,7 @@ class _MainScreenState extends State<MainScreen> {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ambulanceCallRequestStreamSubscription =
-        referenceAmbulanceRequest!.onValue.listen((eventSnap) {
+        referenceAmbulanceRequest!.onChildChanged.listen((eventSnap) {
       if (eventSnap.snapshot.value == null ||
           (eventSnap.snapshot.value as Map)["driverId"] == "waiting") {
         return;
@@ -311,16 +311,19 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       if ((eventSnap.snapshot.value as Map)["status"] != null) {
-        patientRideRequestStatus =
-            (eventSnap.snapshot.value as Map)["status"].toString();
+        print("-----------------------------------------------status");
+       
+          patientRideRequestStatus =
+              (eventSnap.snapshot.value as Map)["status"].toString();
+       
       }
 
-      if ((eventSnap.snapshot.value as Map)["DriverLocation"] != null) {
+      if ((eventSnap.snapshot.value as Map)["driverId"]["DriverLocation"] != null) {
         double driverCurrentPositionLat = double.parse(
-            (eventSnap.snapshot.value as Map)["DriverLocation"]["latitude"]
+            (eventSnap.snapshot.value as Map)["driverId"]["DriverLocation"]["latitude"]
                 .toString());
         double driverCurrentPositionLng = double.parse(
-            (eventSnap.snapshot.value as Map)["DriverLocation"]["longitude"]
+            (eventSnap.snapshot.value as Map)["driverId"]["DriverLocation"]["longitude"]
                 .toString());
 
         LatLng driverCurrentPositionLatLng =
@@ -340,7 +343,7 @@ class _MainScreenState extends State<MainScreen> {
         }
 
         //status == start
-        if (patientRideRequestStatus == "Way To Hospital") {
+        if (patientRideRequestStatus == "wayToHospital") {
           updateReachingTimeToPatientDropOffLocation(
               driverCurrentPositionLatLng);
         }
