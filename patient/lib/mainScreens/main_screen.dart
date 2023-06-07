@@ -287,7 +287,7 @@ class _MainScreenState extends State<MainScreen> {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ambulanceCallRequestStreamSubscription =
-        referenceAmbulanceRequest!.onChildChanged.listen((eventSnap) {
+        referenceAmbulanceRequest!.onValue.listen((eventSnap) {
       if (eventSnap.snapshot.value == null ||
           (eventSnap.snapshot.value as Map)["driverId"] == "waiting") {
         return;
@@ -295,9 +295,7 @@ class _MainScreenState extends State<MainScreen> {
       print("${eventSnap.snapshot.value}-----------------------------------");
       if ((eventSnap.snapshot.value as Map)["driverId"]["driverName"] != null) {
         setState(() {
-          driverName = (eventSnap.snapshot.value as Map)["driverId"]
-                  ["driverName"]
-              .toString();
+          driverName = (eventSnap.snapshot.value as Map)["driverId"]["driverName"].toString();
         });
       }
 
@@ -311,7 +309,7 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       if ((eventSnap.snapshot.value as Map)["status"] != null) {
-        print("-----------------------------------------------status");
+        print("-----------------------------------------------status"+patientRideRequestStatus);
        
           patientRideRequestStatus =
               (eventSnap.snapshot.value as Map)["status"].toString();
@@ -344,8 +342,11 @@ class _MainScreenState extends State<MainScreen> {
 
         //status == start
         if (patientRideRequestStatus == "wayToHospital") {
-          updateReachingTimeToPatientDropOffLocation(
-              driverCurrentPositionLatLng);
+          // updateReachingTimeToPatientDropOffLocation(
+          //     driverCurrentPositionLatLng);
+          setState(() {
+            ambulanceDriverRideStatus = "Way To Hospital";
+          });
         }
       }
     });
