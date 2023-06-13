@@ -1,5 +1,5 @@
 
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 import 'package:firebase_database/firebase_database.dart';
 import 'package:patient/authority/lib/global/global.dart';
 import 'package:patient/driver/lib/global/global.dart';
@@ -35,7 +35,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   void initState()
   {
     super.initState();
-
     tabController =TabController(length: 2, vsync: this);
   }
 

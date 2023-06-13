@@ -21,7 +21,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
   void findPlaceAutoCompleteSearch() async
   {
    
-        Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
 
     LatLng latLngPosition = LatLng(cPosition.latitude, cPosition.longitude);
     String lat = cPosition.latitude.toString(),lon = cPosition.longitude.toString();

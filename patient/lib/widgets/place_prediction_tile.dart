@@ -34,10 +34,10 @@ class _PlacePredictedTileDesignState extends State<PlacePredictedTileDesign> {
 
     var responseApi = await RequestAssistant.receiveRequest(placeDirectionDetailsUrl);
 
-    Navigator.pop(context);
 
     if(responseApi == "request_assistant.dart")
       {
+        Navigator.pop(context);
         return;
       }
     if(responseApi["status"] == "OK")
@@ -56,7 +56,7 @@ class _PlacePredictedTileDesignState extends State<PlacePredictedTileDesign> {
 
         Navigator.pop(context,"obtainedDropoff");
 
-      }
+      }Navigator.pop(context);
   }
 
   @override

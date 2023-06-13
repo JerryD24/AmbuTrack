@@ -35,9 +35,9 @@ class _HomeTabPageState extends State<HomeTabPage>
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
-  String statusText ="Now Offline";
+  String statusText ="Now Online";
   Color buttonColor = Colors.grey;
-  bool isDriverActive = false ;
+  bool isDriverActive = true ;
 
 
   checkIfLocationPermissionAllowed()
@@ -48,6 +48,7 @@ class _HomeTabPageState extends State<HomeTabPage>
     {
       _locationPermission = await Geolocator.requestPermission();
     }
+    return;
   }
 
   locateDriverPosition() async
@@ -61,7 +62,7 @@ class _HomeTabPageState extends State<HomeTabPage>
 
     newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(driverCurrentPosition!, context);
+    // String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(driverCurrentPosition!, context);
     // print("This is your address = $humanReadableAddress");
 
 
@@ -103,8 +104,11 @@ class _HomeTabPageState extends State<HomeTabPage>
   void initState() {
     super.initState();
 
-    checkIfLocationPermissionAllowed();
-    readCurrentDriverInformation();
+    checkIfLocationPermissionAllowed().then((permission){
+      readCurrentDriverInformation();
+      driverIsOnlineNow();
+      updateDriversLocationAtRealTime();
+    });
   }
 
   @override
@@ -137,71 +141,71 @@ class _HomeTabPageState extends State<HomeTabPage>
             :Container(),
     
         //button for online-offline
-        Positioned(
-            top: statusText != "Now Online"
-                ? MediaQuery.of(context).size.height *0.5
-                : 25,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                  onPressed: ()
-                  {
-                    if(isDriverActive != true) //in case of driver is offline
-                      {
-                      driverIsOnlineNow();
-                      updateDriversLocationAtRealTime();
+        // Positioned(
+        //     top: statusText != "Now Online"
+        //         ? MediaQuery.of(context).size.height *0.5
+        //         : 25,
+        //   left: 0,
+        //   right: 0,
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       ElevatedButton(
+        //           onPressed: ()
+        //           {
+        //             if(isDriverActive != true) //in case of driver is offline
+        //               {
+        //               driverIsOnlineNow();
+        //               updateDriversLocationAtRealTime();
     
-                      setState(() {
-                        statusText = "Now Online";
-                        isDriverActive = true;
-                        buttonColor = Colors.transparent;
-                      });
+        //               setState(() {
+        //                 statusText = "Now Online";
+        //                 isDriverActive = true;
+        //                 buttonColor = Colors.transparent;
+        //               });
     
-                      //display Toast
-                      Fluttertoast.showToast(msg: "You are Online Now");
-                    }
-                    else //online
-                      {
-                        driverIsOfflineNow();
-                        setState(() {
-                          statusText = "Now Offline";
-                          isDriverActive = false;
-                          buttonColor = Colors.grey;
-                        });
+        //               //display Toast
+        //               Fluttertoast.showToast(msg: "You are Online Now");
+        //             }
+        //             // else //online
+        //             //   {
+        //             //     driverIsOfflineNow();
+        //             //     setState(() {
+        //             //       statusText = "Now Offline";
+        //             //       isDriverActive = false;
+        //             //       buttonColor = Colors.grey;
+        //             //     });
     
-                        //display Toast
-                        Fluttertoast.showToast(msg: "You are Offline Now");
-                      }
-                  },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 18,),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                ),
+        //             //     //display Toast
+        //             //     Fluttertoast.showToast(msg: "You are Offline Now");
+        //             //   }
+        //           },
+        //         style: ElevatedButton.styleFrom(
+        //           backgroundColor: buttonColor,
+        //           padding: const EdgeInsets.symmetric(horizontal: 18,),
+        //           shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(26),
+        //           ),
+        //         ),
     
-                  child: statusText != "Now Online"
-                      ? Text(
-                    statusText,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  )
-                      : const Icon(
-                    Icons.phonelink_ring,
-                    color: Colors.white,
-                    size: 26,
-                  ),
-              ),
-            ],
-          ),
-        ),
+        //           child: statusText != "Now Online"
+        //               ? Text(
+        //             statusText,
+        //             style: TextStyle(
+        //               fontSize: 16,
+        //               fontWeight: FontWeight.bold,
+        //               color: Colors.white,
+        //             ),
+        //           )
+        //               : const Icon(
+        //             Icons.phonelink_ring,
+        //             color: Colors.white,
+        //             size: 26,
+        //           ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
@@ -220,7 +224,6 @@ class _HomeTabPageState extends State<HomeTabPage>
         driverCurrentPosition!.latitude,
         driverCurrentPosition!.longitude
     );
-
     DatabaseReference ref = FirebaseDatabase.instance.ref()
         .child("Drivers")
         .child(currentFirebaseUser!.uid)
