@@ -713,31 +713,30 @@ class _NewTripScreenState extends State<NewTripScreen> {
     );
 
     FirebaseDatabase.instance
-        .ref()
-        .child("Ambulance Request")
-        .child(widget.patientRideRequestDetails!.rideRequestId!)
-        .child("status")
-        .set("ended")
-        .then((value) => {
-              FirebaseDatabase.instance
-                  .ref()
-                  .child("Drivers")
-                  .child(currentFirebaseUser!.uid)
-                  .child("newRideStatus")
-                  .set("idle")
-                  .then((value) => {
-                        FirebaseDatabase.instance
-                            .ref("Ambulance Request")
-                            .child(widget
-                                .patientRideRequestDetails!.rideRequestId!)
-                            .remove()
-                      }),
-            });
+      .ref()
+      .child("Ambulance Request")
+      .child(widget.patientRideRequestDetails!.rideRequestId!)
+      .child("status")
+      .set("ended")
+      .then((value) => {
+        FirebaseDatabase.instance
+          .ref()
+          .child("Drivers")
+          .child(currentFirebaseUser!.uid)
+          .child("newRideStatus")
+          .set("idle")
+          .then((value) => {
+            FirebaseDatabase.instance
+              .ref("Ambulance Request")
+              .child(widget.patientRideRequestDetails!.rideRequestId!)
+              .remove()
+          }),
+    });
     /////////////////////////////////////   For Authority
     FirebaseDatabase.instance
-        .ref("Ambulance On Work") //For Authority
-        .child(widget.patientRideRequestDetails!.rideRequestId!) //For Authority
-        .remove(); //For Authority
+      .ref("Ambulance On Work") //For Authority
+      .child(widget.patientRideRequestDetails!.rideRequestId!) //For Authority
+      .remove(); //For Authority
 
     /////////////////////////////////////
 
@@ -750,10 +749,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
   saveAssignedDriverDetailsToUserRideRequest() async {
     DatabaseReference databaseReference = FirebaseDatabase.instance
-        .ref()
-        .child("Ambulance Request")
-        .child(widget.patientRideRequestDetails!.rideRequestId!)
-        .child("driverId");
+      .ref()
+      .child("Ambulance Request")
+      .child(widget.patientRideRequestDetails!.rideRequestId!)
+      .child("driverId");
 
     Map driverLocationDataMap = {
       "latitude": driverCurrentPosition!.latitude.toString(),
@@ -769,35 +768,35 @@ class _NewTripScreenState extends State<NewTripScreen> {
 //////////////////////////////////////////For Authority///////////////////////////////////////////////////
 
     DatabaseReference databaseReferenceForAuthority = FirebaseDatabase.instance
-        .ref() //For Authority
-        .child("Ambulance On Work") //For Authority
-        .child(widget.patientRideRequestDetails!.rideRequestId!)
-        .child("driverId");
+      .ref() //For Authority
+      .child("Ambulance On Work") //For Authority
+      .child(widget.patientRideRequestDetails!.rideRequestId!)
+      .child("driverId");
     Map driverLocationDataMapForAuthority = {
       "latitude": driverCurrentPosition!.latitude.toString(),
       "longitude": driverCurrentPosition!.longitude.toString(),
     };
     databaseReferenceForAuthority
-        .child("DriverLocation")
-        .set(driverLocationDataMapForAuthority);
+      .child("DriverLocation")
+      .set(driverLocationDataMapForAuthority);
 
     databaseReferenceForAuthority
-        .child("driverName")
-        .set(onlineDriverData.name);
+      .child("driverName")
+      .set(onlineDriverData.name);
     databaseReferenceForAuthority
-        .child("driverPhone")
-        .set(onlineDriverData.phone);
+      .child("driverPhone")
+      .set(onlineDriverData.phone);
     databaseReferenceForAuthority
-        .child("ambulanceNumber")
-        .set(onlineDriverData.ambulanceNumber);
+      .child("ambulanceNumber")
+      .set(onlineDriverData.ambulanceNumber);
         // print(widget.patientRideRequestDetails!.originLatLng!.latitude.toString()+"-----------------------------------patientloc");
     databaseReferenceForAuthority
-        .child("patientPikUpLocation")
-        .set({"Address":widget.patientRideRequestDetails!.originAddress,"Lat":widget.patientRideRequestDetails!.originLatLng!.latitude,"Long":widget.patientRideRequestDetails!.originLatLng!.longitude});
+      .child("patientPikUpLocation")
+      .set({"Address":widget.patientRideRequestDetails!.originAddress,"Lat":widget.patientRideRequestDetails!.originLatLng!.latitude,"Long":widget.patientRideRequestDetails!.originLatLng!.longitude});
 
     DatabaseReference authorityReference = FirebaseDatabase.instance
-        .ref("Ambulance Request")
-        .child(widget.patientRideRequestDetails!.rideRequestId!);
+      .ref("Ambulance Request")
+      .child(widget.patientRideRequestDetails!.rideRequestId!);
     var ambulanceNumber = onlineDriverData.ambulanceNumber;
 
     DatabaseEvent event = await authorityReference.once();
@@ -840,13 +839,13 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
   saveRideRequestIdToDriverHistory() {
     DatabaseReference tripsHistoryRef = FirebaseDatabase.instance
-        .ref()
-        .child("Drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("tripsHistory");
+      .ref()
+      .child("Drivers")
+      .child(currentFirebaseUser!.uid)
+      .child("tripsHistory");
 
     tripsHistoryRef
-        .child(widget.patientRideRequestDetails!.rideRequestId!)
-        .set(true);
+      .child(widget.patientRideRequestDetails!.rideRequestId!)
+      .set(true);
   }
 }

@@ -1,5 +1,5 @@
+// ignore_for_file: unused_import
 import 'dart:async';
-
 import 'package:patient/driver/lib/push_notifications/push_notification_system.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-
 import '../assistants/assistant_methods.dart';
 import '../assistants/black_theme_google_map.dart';
 import '../global/global.dart';
@@ -31,14 +30,12 @@ class _HomeTabPageState extends State<HomeTabPage>
     zoom: 14.4746,
   );
 
-
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
   String statusText ="Now Online";
   Color buttonColor = Colors.grey;
   bool isDriverActive = true ;
-
 
   checkIfLocationPermissionAllowed()
   async {
@@ -61,11 +58,8 @@ class _HomeTabPageState extends State<HomeTabPage>
     CameraPosition cameraPosition = CameraPosition(target: latLngPosition,zoom: 14);
 
     newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-
     // String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(driverCurrentPosition!, context);
     // print("This is your address = $humanReadableAddress");
-
-
   }
 
   readCurrentDriverInformation() async

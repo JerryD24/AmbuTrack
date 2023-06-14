@@ -1,7 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations, use_build_context_synchronously, prefer_interpolation_to_compose_strings
 
 import 'dart:async';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ import 'package:patient/models/active_nearby_available_ambulance_drivers.dart';
 import 'package:patient/widgets/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../global/global.dart';
 import '../infoHandler/app_info.dart';
 import '../widgets/my_drawer.dart';
@@ -237,7 +235,7 @@ class _MainScreenState extends State<MainScreen> {
     String humanReadableAddress =
         await AssistantMethods.searchAddressForGeographicCoOrdinates(
             patientCurrentPosition!, context);
-    print("This is your address = $humanReadableAddress");
+    // print("This is your address = $humanReadableAddress");
 
     patientName = userModelCurrentInfo!.name!;
     patientEmail = userModelCurrentInfo!.email!;
@@ -292,7 +290,7 @@ class _MainScreenState extends State<MainScreen> {
           (eventSnap.snapshot.value as Map)["driverId"] == "waiting") {
         return;
       }
-      print("${eventSnap.snapshot.value}-----------------------------------");
+      // print("${eventSnap.snapshot.value}-----------------------------------");
       if ((eventSnap.snapshot.value as Map)["driverId"]["driverName"] != null) {
         setState(() {
           driverName = (eventSnap.snapshot.value as Map)["driverId"]["driverName"].toString();
@@ -309,7 +307,7 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       if ((eventSnap.snapshot.value as Map)["status"] != null) {
-        print("-----------------------------------------------status"+patientRideRequestStatus);
+        // print("-----------------------------------------------status"+patientRideRequestStatus);
        
           patientRideRequestStatus =
               (eventSnap.snapshot.value as Map)["status"].toString();
@@ -409,7 +407,6 @@ class _MainScreenState extends State<MainScreen> {
     //when no active driver available
     if (onlineNearbyAvailableAmbulanceDriversList.isEmpty) {
       //Cancel the ride request
-
       referenceAmbulanceRequest!.remove();
 
       setState(() {
@@ -431,21 +428,24 @@ class _MainScreenState extends State<MainScreen> {
 
     //active driver available
     await retrieveOnlineAmbulanceDriverInformation(
-        onlineNearbyAvailableAmbulanceDriversList);
+      onlineNearbyAvailableAmbulanceDriversList
+    );
 
     var response = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (c) => SelectNearestActiveAmbulanceDriversScreen(
-                referenceAmbulanceRequest: referenceAmbulanceRequest)));
+      context,
+      MaterialPageRoute(
+        builder: (c) => SelectNearestActiveAmbulanceDriversScreen(
+        referenceAmbulanceRequest: referenceAmbulanceRequest)
+      )
+    );
 
     if (response == "driverChosen") {
       FirebaseDatabase.instance
-          .ref()
-          .child("Drivers")
-          .child(chosenDriverId!)
-          .once()
-          .then((snap) {
+        .ref()
+        .child("Drivers")
+        .child(chosenDriverId!)
+        .once()
+        .then((snap) {
         if (snap.snapshot.value != null) {
           //sent notification to that specific Driver
           sendNotificationToDriverNow(chosenDriverId!);
@@ -467,12 +467,11 @@ class _MainScreenState extends State<MainScreen> {
             //(newRiseStatus = idle)
 
             if (eventSnapshot.snapshot.value == "idle") {
+              print(patientRideRequestStatus+"==================================");
               Fluttertoast.showToast(
-                  msg:
-                      "Driver has cancelled your Request. Please choose another Driver.");
-
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (c) => const MainScreen()));
+                msg: patientRideRequestStatus=="ended"?"Reached Hospital.":"Driver has cancelled your Request. Please choose another Driver."
+              );
+              Navigator.push(context,MaterialPageRoute(builder: (c) => const MainScreen()));
             }
 
             //2.Accept the Ride Request :: Push Notification
@@ -482,7 +481,7 @@ class _MainScreenState extends State<MainScreen> {
             }
           });
         } else {
-          Fluttertoast.showToast(msg: "This Driver do not exist.");
+          Fluttertoast.showToast(msg: "This Driver does not exist.");
         }
       });
     }
@@ -978,23 +977,23 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               Provider.of<AppInfo>(context).patientPickUpLocation == null
-                  ? Container(
-                      color: Color.fromARGB(134, 181, 181, 181),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            Text(
-                              "Fetching Current Location",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      ),
-                    )
+                ? Container(
+                  color: Color.fromARGB(134, 181, 181, 181),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        Text(
+                          "Fetching Current Location",
+                          style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                  )
                   : Container()
             ],
           ),
@@ -1027,12 +1026,12 @@ class _MainScreenState extends State<MainScreen> {
 
     Navigator.pop(context);
 
-    print("These are Points :  ");
-    print(directionDetailsInfo!.e_points);
+    // print("These are Points :  ");
+    // print(directionDetailsInfo!.e_points);
 
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodedPolyLinePointsResultList =
-        pPoints.decodePolyline(directionDetailsInfo.e_points!);
+        pPoints.decodePolyline(directionDetailsInfo!.e_points!);
 
     pLinesCoOrdinatesList.clear();
 
