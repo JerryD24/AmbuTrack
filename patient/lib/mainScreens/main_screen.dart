@@ -539,8 +539,9 @@ class _MainScreenState extends State<MainScreen> {
   retrieveOnlineAmbulanceDriverInformation(
       List onlineNearestAmbulanceDriversList) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref().child("Drivers");
+    dList.clear();
     for (int i = 0; i < onlineNearestAmbulanceDriversList.length; i++) {
-      dList.clear();
+
       await ref
           .child(onlineNearestAmbulanceDriversList[i].driverId.toString())
           .once()
